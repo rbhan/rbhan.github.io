@@ -1,6 +1,6 @@
 theme: jekyll-theme-minimal
 title: ""
-logo: 
+logo: /assets/img/peakmoist.jpg
 repository: rbhan/rbhan.github.io
 timezone: America/New_York
 jekyll_compose:
