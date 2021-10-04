@@ -1,1 +1,13 @@
 theme: jekyll-theme-minimal
+title: ""
+logo: 
+repository: rbhan/rbhan.github.io
+timezone: America/New_York
+jekyll_compose:
+  default_front_matter:
+    posts:
+      tags: TODO
+plugins:
+  - jekyll-mentions
+  - jekyll-github-metadata
+  - jemoji
