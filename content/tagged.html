@@ -8,8 +8,8 @@ permalink: tagged.html
 {% for tag in mytags %}
   <h3 id="{{ tag[0] }}">{{ tag[0] }}</h3>
   <ul>
-    {% for poast in tag[1] %}
-      <li><a href="{{ poast.url }}">{{ poast.title }}</a></li>
+    {% for post in tag[1] %}
+      <li><a href="{{ post.url }}">{{ post.title }}</a></li>
     {% endfor %}
   </ul>
 {% endfor %}
