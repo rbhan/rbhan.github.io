@@ -6,13 +6,13 @@ excerpt_separator: <!--more-->
 tags: gpt-2 pastiche
 ---
 
-**“No More Games. No More Bombs. No More Walking. No More Fun.”**
+<b><i>“No More Games. No More Bombs. No More Walking. No More Fun.”</i></b>
 
-*Dawn is coming up in Atlantic Station now: 6:09 AM. I can hear the rumble of early morning buses under my window... out here at the far end of Mecaslin: This is the end of the line, for buses and everything else, the northern edge of civilization. From my desk I can see the dark jagged hump of the Millenium Gate looming out of the ocean in the grey morning light. About 200 dogs have been barking out there most of the night.*
+**The Good Doctor Speaks Again** (generated via [GPT-2](https://openai.com/blog/better-language-models/))
 
 <!--more-->
 
-**The Good Doctor Speaks Again** (generated via [GPT-2](https://openai.com/blog/better-language-models/))
+*Dawn is coming up in Atlantic Station now: 6:09 AM. I can hear the rumble of early morning buses under my window... out here at the far end of Mecaslin: This is the end of the line, for buses and everything else, the northern edge of civilization. From my desk I can see the dark jagged hump of the Millenium Gate looming out of the ocean in the grey morning light. About 200 dogs have been barking out there most of the night.*
 
 I feel exhausted already. No time for sleep. I need to be alert for the hunt.
 
