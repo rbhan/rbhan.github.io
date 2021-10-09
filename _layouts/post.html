@@ -9,6 +9,7 @@ layout: default
 
 {{content}}
 
+<!-- 
 {% if page.discussion_id %}
   {% capture discussion_url %}
     {{ site.github.repository_url }}/discussions/{{ page.discussion_id }}
@@ -24,11 +25,12 @@ layout: default
   {{ site.github.repository_url }}/edit/{{ site.github.source.branch }}{{ site.github.source.path }}{{ page.path }}
 {% endcapture %}
 <small><a href="{{ contribute_url | rstrip }}">contribute</a></small> |
+ -->
 
 {% if page.tags %}
   <small>tags: 
     {% for tag in page.tags %}
-      <a href="{% link content/posts-by-tag.html %}#{{ tag }}">{{ tag }}</a>
+      <a href="{% link content/tagged.html %}#{{ tag }}">{{ tag }}</a>
     {% endfor %}
   </small>
 {% endif %}
