@@ -6,15 +6,14 @@ excerpt_separator: <!--more-->
 tags: gpt-2 pastiche
 ---
 
-<p style="text-align: center;">
-  <em>“No More Games. No More Bombs. No More Walking. No More Fun.”</em>
-</p>
+**“No More Games. No More Bombs. No More Walking. No More Fun.”**
 
-**The Good Doctor Speaks Again: A Decompression Notice for the Departing Class at Ford.  
-_[-- Hunter S. Thompson via GPT-2](https://openai.com/blog/better-language-models/)_**
+Dawn is coming up in Atlantic Station now: 6:09 AM. I can hear the rumble of early morning buses under my window... out here at the far end of Mecaslin: This is the end of the line, for buses and everything else, the northern edge of civilization. From my desk I can see the dark jagged hump of the Millenium Gate looming out of the ocean in the grey morning light. About 200 dogs have been barking out there most of the night.
+
 <!--more-->
 
-Dawn is coming up in Atlantic Station now: 6:09 AM. I can hear the rumble of early morning buses under my window... out here at the far end of Mecaslin: This is the end of the line, for buses and everything else, the northern edge of civilization. From my desk I can see the dark jagged hump of the Millenium Gate looming out of the ocean in the grey morning light. About 200 seals have been barking out there most of the night. Staying in this place with the windows open is like living next to a dog pound.
+**The Good Doctor Speaks Again**     
+*- Hunter S. Thompson via [GPT-2](https://openai.com/blog/better-language-models/)*
 
 I feel exhausted already. No time for sleep. I need to be alert for the hunt.
 
