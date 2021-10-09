@@ -12,7 +12,7 @@ tags: gpt-2 pastiche
 
 <!--more-->
 
-**The Good Doctor Speaks Again** via [GPT-2](https://openai.com/blog/better-language-models/)
+**The Good Doctor Speaks Again** (generated via [GPT-2](https://openai.com/blog/better-language-models/))
 
 I feel exhausted already. No time for sleep. I need to be alert for the hunt.
 
