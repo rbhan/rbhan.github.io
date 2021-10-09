@@ -6,4 +6,4 @@ timezone: America/New_York
 jekyll_compose:
   default_front_matter:
     posts:
-      tags: TODO
+      tags:
