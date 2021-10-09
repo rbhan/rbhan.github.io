@@ -7,7 +7,3 @@ jekyll_compose:
   default_front_matter:
     posts:
       tags: TODO
-plugins:
-  - jekyll-mentions
-  - jekyll-github-metadata
-  - jemoji
