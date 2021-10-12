@@ -13,9 +13,11 @@ It's called the diagonal argument and it goes something like this:
 
 <!--more-->
 
-First, ask your conversation partner to imagine the (infinitely large) set \\(S\\) containing all possible (infinitely long) binary strings. Prompt them to list several such strings so that they roughly form a square matrix. 
+First, ask your conversation partner to imagine the (infinitely large) set \\( S \\) containing all possible (infinitely long) binary strings. Prompt them to list several such strings so that they roughly form a square matrix. 
 
-\\[ \begin{bmatrix} \begin{align} & e1 = 0, 0, 0, 0, 0, 0, 0, 0, ... \newline & e2 = 1, 1, 1, 1, 1, 1, 1, 1, ... \newline & e3 = 0, 1, 0, 1, 0, 1, 0, 1, ... \newline & e4 = 0, 1, 0, 0, 1, 0, 0, 1, ... \newline & e5 = 0, 0, 1, 0, 0, 1, 0, 0, ... \newline & e6 = 1, 0, 1, 1, 1, 1, 0, 1, ... \newline & e7 = 0, 1, 0, 0, 0, 0, 1, 0, ... \newline & e8 = 0, 1, 1, 0, 1, 1, 0, 1, ... \newline & ... \end{align} \end{bmatrix} \\]
+\\[
+  \begin{bmatrix} \begin{align} & e1 = 0, 0, 0, 0, 0, 0, 0, 0, ... \newline & e2 = 1, 1, 1, 1, 1, 1, 1, 1, ... \newline & e3 = 0, 1, 0, 1, 0, 1, 0, 1, ... \newline & e4 = 0, 1, 0, 0, 1, 0, 0, 1, ... \newline & e5 = 0, 0, 1, 0, 0, 1, 0, 0, ... \newline & e6 = 1, 0, 1, 1, 1, 1, 0, 1, ... \newline & e7 = 0, 1, 0, 0, 0, 0, 1, 0, ... \newline & e8 = 0, 1, 1, 0, 1, 1, 0, 1, ... \newline & ... \end{align} \end{bmatrix}
+\\]
 
 Now, instruct them to flip the $n^{th}$ element of $en$. Suggest that this is easily visusalized by flipping each element down the "diagonal" of the matrix. $$ \begin{bmatrix} \begin{align} & e1 = \textbf{1}, 0, 0, 0, 0, 0, 0, 0, ... \newline & e2 = 1, \textbf{0}, 1, 1, 1, 1, 1, 1, ... \newline & e3 = 0, 1, \textbf{1}, 1, 0, 1, 0, 1, ... \newline & e4 = 0, 1, 0, \textbf{1}, 1, 0, 0, 1, ... \newline & e5 = 0, 0, 1, 0, \textbf{1}, 1, 0, 0, ... \newline & e6 = 1, 0, 1, 1, 1, \textbf{0}, 0, 1, ... \newline & e7 = 0, 1, 0, 0, 0, 0, \textbf{0}, 0, ... \newline & e_8 = 0, 1, 1, 0, 1, 1, 0, \textbf{0}, ... \newline & ... \end{align} \end{bmatrix} $$
 
