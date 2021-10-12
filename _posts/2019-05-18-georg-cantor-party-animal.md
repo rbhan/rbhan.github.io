@@ -31,4 +31,4 @@ Ultimately they should agree that <img src="https://render.githubusercontent.com
 
 Congratulate them on having demonstrably proven that not all infinites are created equal -- some infinite sets (their set <img src="https://render.githubusercontent.com/render/math?math=S">!) are larger than other infinite sets.
 
-But wait, you ask, what kind of party is this, and where are we again?
+*But wait*, you ask, *what kind of party is this, and where are we again?*
