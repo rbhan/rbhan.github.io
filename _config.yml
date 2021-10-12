@@ -3,7 +3,6 @@ title: ""
 logo: /assets/img/peakmoist.jpg
 repository: rbhan/rbhan.github.io
 timezone: America/New_York
-markdown: kramdown
 jekyll_compose:
   default_front_matter:
     posts:
