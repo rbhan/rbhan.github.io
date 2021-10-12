@@ -23,7 +23,7 @@ Now, instruct them to flip the <img src="https://render.githubusercontent.com/re
 
 Have them explicitly write down the binary string formed by flipping all the diagonal values: <img src="https://render.githubusercontent.com/render/math?math=%5Cbf%7Be%20%3D%201%2C%200%2C%201%2C%201%2C%201%2C%200%2C%200%2C%200%2C%20...%7D">
 
-stablish agreement that <img src="https://render.githubusercontent.com/render/math?math=%5Cbf%7Be%7D"> is, by definition, a member of set <img src="https://render.githubusercontent.com/render/math?math=S">.
+Establish agreement that <img src="https://render.githubusercontent.com/render/math?math=%5Cbf%7Be%7D"> is, by definition, a member of set <img src="https://render.githubusercontent.com/render/math?math=S">.
 
 Finally, reveal that <img src="https://render.githubusercontent.com/render/math?math=%5Cbf%7Be%7D"> is a new member of set <img src="https://render.githubusercontent.com/render/math?math=S">. Give them a moment to consider this. 
 
