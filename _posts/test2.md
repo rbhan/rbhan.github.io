@@ -1,5 +1,6 @@
 ---
-use_math:true
+layout: default
+use_math: true
 ---
 
 $$2+2$$
