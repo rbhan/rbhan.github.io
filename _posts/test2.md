@@ -1,6 +1,6 @@
 ---
 layout: default
-use_math: true
+katex: yes
 ---
 
 $$2+2$$
