@@ -1,6 +1,6 @@
 ---
 layout: default
-katex: yes
+katex: true
 ---
 
 $$\LaTeX code$$
