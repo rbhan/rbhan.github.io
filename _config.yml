@@ -3,6 +3,9 @@ title: ""
 logo: /assets/img/peakmoist.jpg
 repository: rbhan/rbhan.github.io
 timezone: America/New_York
+markdown: kramdown
+  kramdown:
+    math_engine: katex
 jekyll_compose:
   default_front_matter:
     posts:
