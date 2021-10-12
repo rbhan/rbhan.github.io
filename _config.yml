@@ -2,7 +2,7 @@ theme: jekyll-theme-minimal
 title: ""
 logo: /assets/img/peakmoist.jpg
 repository: rbhan/rbhan.github.io
-timezone: America/New_York
+# timezone: America/New_York
 jekyll_compose:
   default_front_matter:
     posts:
