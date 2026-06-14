@@ -1,0 +1,13 @@
+{
+  "name": "Wardrobe",
+  "short_name": "Wardrobe",
+  "description": "Personal closet log, wear diary, and outfit-pairing engine.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F4F3F7",
+  "theme_color": "#F4F3F7",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
