@@ -1,0 +1,1477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wardrobe</title>
+<meta name="description" content="A private closet log, wear diary, and outfit-pairing engine.">
+<meta name="theme-color" content="#F4F3F7">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+:root{
+  --bg:#F4F3F7; --paper:#FFFFFF; --ink:#262430; --soft:#6E6A7A; --faint:#A39FAE;
+  --line:#DFDCE7; --line-soft:#EAE8F0;
+  --accent:#7C6BAE; --accent-ink:#5B4D8A; --accent-wash:#EFEBF7;
+  --olive:#6B7250; --camel:#B98E5F; --blush:#D89AA9;
+  --good:#4E7A52; --good-wash:#E8F0E8; --bad:#A8423F; --bad-wash:#F5E7E6; --warn:#A8743F;
+  --r:10px; --shadow:0 10px 26px rgba(38,36,48,.12);
+  --disp:"Didot","Bodoni MT","Playfair Display","Times New Roman",serif;
+  --body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);padding-bottom:env(safe-area-inset-bottom)}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+::selection{background:var(--accent-wash)}
+
+/* ---------- masthead ---------- */
+header.mast{padding:22px 16px 0;max-width:1180px;margin:0 auto}
+.mast .eyebrow{font:600 10px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--soft)}
+.mast h1{font:400 40px/1 var(--disp);margin:4px 0 2px;letter-spacing:.01em}
+.mast h1 em{font-style:italic;color:var(--accent-ink)}
+.mast .sub{color:var(--soft);font-size:13px;margin:0 0 12px}
+.rule-label{border:none;border-top:1px solid var(--ink);position:relative;margin:0}
+.rule-label::after{content:"";display:block;border-top:1px solid var(--ink);margin-top:2px}
+
+/* ---------- tabs ---------- */
+nav.tabs{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{max-width:1180px;margin:0 auto;display:flex;gap:2px;overflow-x:auto;padding:0 10px;scrollbar-width:none}
+nav.tabs .wrap::-webkit-scrollbar{display:none}
+.tabbtn{appearance:none;background:none;border:none;padding:12px 12px 10px;font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--soft);border-bottom:2px dashed transparent;white-space:nowrap}
+.tabbtn[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabbtn .cnt{color:var(--faint);font-weight:500}
+
+main{max-width:1180px;margin:0 auto;padding:14px 14px 110px}
+section[hidden]{display:none}
+h2.sec{font:400 24px var(--disp);margin:18px 0 4px}
+p.hint{color:var(--soft);font-size:13px;margin:2px 0 12px}
+hr.seam{border:none;border-top:2px dashed var(--line);margin:20px 0}
+
+/* ---------- controls ---------- */
+.btn{border:1px solid var(--ink);background:var(--paper);border-radius:8px;padding:8px 14px;font-weight:600;font-size:13px;transition:transform .12s}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ghost{border-color:var(--line);color:var(--soft);background:transparent}
+.btn.sm{padding:5px 10px;font-size:12px;border-radius:7px}
+.btn.danger{border-color:var(--bad);color:var(--bad);background:var(--paper)}
+.btn[disabled]{opacity:.45;cursor:default}
+.iconb{border:1px solid var(--line);background:var(--paper);border-radius:8px;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;color:var(--soft)}
+.iconb[aria-pressed="true"]{border-color:var(--ink);color:var(--ink);background:var(--accent-wash)}
+input[type=text],input[type=search],input[type=date],input[type=url],input[type=number],select,textarea{
+  background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;max-width:100%}
+textarea{width:100%;min-height:64px;resize:vertical}
+label.fld{display:block;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--soft);margin:10px 0 4px}
+.fieldrow{display:flex;gap:10px;flex-wrap:wrap}
+.fieldrow>div{flex:1;min-width:130px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--paper)}
+.seg button{border:none;background:none;padding:7px 12px;font-size:12px;font-weight:600;color:var(--soft)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+
+/* toolbar */
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0 10px}
+.toolbar .grow{flex:1;min-width:150px}
+.toolbar input[type=search]{width:100%}
+.pillrow{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.pillrow::-webkit-scrollbar{display:none}
+.pill{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600;color:var(--soft);white-space:nowrap}
+.pill[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.filters select{font-size:12.5px;padding:6px 8px}
+.chk{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--soft);font-weight:600}
+
+/* ---------- hang-tag chips ---------- */
+.tag{display:inline-flex;align-items:center;font:600 10px var(--mono);letter-spacing:.05em;text-transform:uppercase;border:1px solid currentColor;border-radius:3px;padding:1.5px 5px 1.5px 12px;position:relative;color:var(--soft)}
+.tag::before{content:"";width:4px;height:4px;border:1px solid currentColor;border-radius:50%;position:absolute;left:4px;top:50%;transform:translateY(-50%)}
+.tag.accent{color:var(--accent-ink)}
+.tag.good{color:var(--good)} .tag.bad{color:var(--bad)} .tag.warn{color:var(--warn)}
+.chip{display:inline-block;font-size:11.5px;font-weight:600;color:var(--soft);background:var(--line-soft);border-radius:999px;padding:2px 9px}
+.why{display:inline-block;font-size:11px;color:var(--accent-ink);background:var(--accent-wash);border-radius:999px;padding:2px 8px;margin:2px 3px 0 0}
+.why.neg{color:var(--bad);background:var(--bad-wash)}
+
+/* ---------- closet grid (signature: fabric swatches) ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;position:relative;transition:transform .16s ease,box-shadow .16s ease;text-align:left;padding:0}
+.card:hover{transform:translateY(-3px) rotate(-.5deg);box-shadow:var(--shadow);z-index:2}
+.card.dep{opacity:.5}
+.card.selected{outline:2.5px solid var(--accent);outline-offset:-1px}
+.sw{aspect-ratio:1/1;position:relative;display:block}
+.sw img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sw .stitch{position:absolute;inset:7px;border:1.5px dashed var(--stitch,rgba(0,0,0,.2));border-radius:6px;pointer-events:none}
+.sw .cat-ic{position:absolute;right:7px;bottom:7px;width:22px;height:22px;color:var(--icink,rgba(0,0,0,.45))}
+.sw .selmark{position:absolute;left:7px;top:7px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;display:none;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.card.selected .selmark{display:flex}
+.card .meta{padding:7px 9px 9px}
+.card .nm{font-size:12.5px;font-weight:600;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em}
+.card .sub{display:flex;align-items:center;gap:6px;margin-top:5px;color:var(--faint)}
+.card .sub .wear{font:600 10px var(--mono);margin-left:auto}
+
+/* list (description) view */
+.lrows{border:1px solid var(--line);border-radius:var(--r);background:var(--paper);overflow:hidden}
+.lrow{display:grid;grid-template-columns:44px minmax(140px,1.7fr) .9fr 1fr 1.2fr auto;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line-soft);cursor:pointer;width:100%;background:none;border-left:none;border-right:none;border-top:none;text-align:left;font-size:13px}
+.lrow:last-child{border-bottom:none}
+.lrow:hover{background:var(--accent-wash)}
+.lrow.selected{background:var(--accent-wash);box-shadow:inset 3px 0 0 var(--accent)}
+.lrow.dep{opacity:.5}
+.lrow .mini{width:38px;height:38px;border-radius:7px;border:1px solid var(--line);position:relative;overflow:hidden;flex:none}
+.lrow .mini img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.lrow .nm{font-weight:600}
+.lrow .dim{color:var(--soft);font-size:12px}
+.lrow .col-h{display:block}
+@media(max-width:740px){.lrow{grid-template-columns:44px 1fr auto}.lrow .col-h{display:none}}
+.mini{width:30px;height:30px;border-radius:6px;border:1px solid var(--line);display:inline-block;position:relative;overflow:hidden;vertical-align:middle}
+.mini img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+
+/* ---------- selection action bar ---------- */
+.selbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:40;background:var(--ink);color:var(--paper);border-radius:14px;box-shadow:var(--shadow);padding:10px 12px;display:none;gap:8px;align-items:center;max-width:min(96vw,640px);flex-wrap:wrap;justify-content:center}
+.selbar.on{display:flex}
+.selbar .n{font:700 12px var(--mono);background:var(--accent);border-radius:999px;padding:2px 9px}
+.selbar .btn{background:transparent;border-color:rgba(255,255,255,.35);color:var(--paper)}
+.selbar .btn.accent{background:var(--accent);border-color:var(--accent)}
+
+/* ---------- cards / panels ---------- */
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:10px 0}
+.panel h3{font:400 18px var(--disp);margin:0 0 6px}
+.entry{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin:8px 0}
+.entry .top{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.entry .date{font:600 11px var(--mono);color:var(--soft)}
+.entry .ttl{font-weight:700}
+.entry .minis{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0 2px}
+.entry .notes{color:var(--soft);font-size:13px;margin-top:4px}
+.entry .acts{display:flex;gap:6px;margin-top:8px}
+.mon{font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:18px 0 4px}
+
+/* outfit suggestion cards */
+.fitcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin:10px 0}
+.fitcard .items{display:flex;gap:8px;flex-wrap:wrap}
+.fitcard .it{display:flex;gap:7px;align-items:center;border:1px solid var(--line-soft);border-radius:8px;padding:4px 8px 4px 4px;font-size:12.5px;font-weight:600;background:var(--bg)}
+.score{font:700 13px var(--mono);color:var(--accent-ink);border:1.5px solid var(--accent);border-radius:999px;padding:2px 9px;display:inline-block}
+.fitcard .hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+
+/* weight bars */
+.wrow{display:grid;grid-template-columns:110px 1fr 38px;gap:8px;align-items:center;font-size:12px;margin:4px 0}
+.wbar{height:8px;border-radius:99px;background:var(--line-soft);position:relative;overflow:hidden}
+.wbar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:99px}
+.wbar i.neg{background:var(--bad)}
+
+/* stats */
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:12px}
+.stat .v{font:400 30px var(--disp)}
+.stat .k{font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+.bar{display:grid;grid-template-columns:90px 1fr 30px;gap:8px;align-items:center;font-size:12.5px;margin:5px 0}
+.bar .tr{height:10px;background:var(--line-soft);border-radius:99px;overflow:hidden}
+.bar .tr i{display:block;height:100%;background:var(--camel);border-radius:99px}
+
+/* ---------- modal ---------- */
+.scrim{position:fixed;inset:0;background:rgba(38,36,48,.5);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:720px){.scrim{align-items:center;padding:24px}}
+.sheet{background:var(--bg);width:100%;max-width:700px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 16px calc(22px + env(safe-area-inset-bottom));border:1px solid var(--line)}
+@media(min-width:720px){.sheet{border-radius:14px;padding:22px}}
+.sheet .shead{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.sheet .shead h3{font:400 22px var(--disp);margin:0;flex:1}
+.xbtn{border:1px solid var(--line);background:var(--paper);border-radius:8px;width:32px;height:32px;font-size:15px;line-height:1;flex:none}
+.bigsw{width:100%;aspect-ratio:16/10;border-radius:12px;border:1px solid var(--line);position:relative;overflow:hidden;margin-bottom:12px}
+.bigsw img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bigsw .stitch{position:absolute;inset:10px;border:2px dashed var(--stitch,rgba(0,0,0,.2));border-radius:8px;pointer-events:none}
+
+/* item picker inside modals */
+.pick{border:1px solid var(--line);border-radius:10px;background:var(--paper);max-height:240px;overflow:auto;margin-top:6px}
+.pick .pr{display:flex;gap:9px;align-items:center;width:100%;background:none;border:none;border-bottom:1px solid var(--line-soft);padding:7px 10px;text-align:left;font-size:13px}
+.pick .pr:hover{background:var(--accent-wash)}
+.pick .pr .tick{margin-left:auto;color:var(--accent-ink);font-weight:700;visibility:hidden}
+.pick .pr.on .tick{visibility:visible}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chips .ich{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 9px 3px 4px;font-size:12px;font-weight:600}
+.chips .ich button{border:none;background:none;color:var(--faint);padding:0 2px;font-size:13px}
+
+/* toast */
+#toasts{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;width:min(94vw,420px)}
+.toast{background:var(--ink);color:var(--paper);border-radius:10px;padding:10px 14px;font-size:13.5px;box-shadow:var(--shadow);animation:tin .25s ease}
+.toast.err{background:var(--bad)}
+@keyframes tin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+.empty{border:2px dashed var(--line);border-radius:var(--r);padding:26px 16px;text-align:center;color:var(--soft);font-size:13.5px;margin:12px 0}
+.empty b{display:block;font:400 19px var(--disp);color:var(--ink);margin-bottom:4px}
+
+footer{max-width:1180px;margin:30px auto 0;padding:0 16px 26px;color:var(--faint);font-size:12px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.card:hover{transform:none}}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="eyebrow">Personal closet · wear diary · pairing engine</div>
+  <h1><em>wardrobe</em></h1>
+  <p class="sub">Every piece, every wear, and what goes with what — yours, on any device.</p>
+  <hr class="rule-label">
+</header>
+
+<nav class="tabs" aria-label="Sections"><div class="wrap" id="tabwrap">
+  <button class="tabbtn" data-tab="closet" aria-selected="true">Closet <span class="cnt" id="cnt-items"></span></button>
+  <button class="tabbtn" data-tab="log" aria-selected="false">Wear log <span class="cnt" id="cnt-log"></span></button>
+  <button class="tabbtn" data-tab="pair" aria-selected="false">Pairings <span class="cnt" id="cnt-pair"></span></button>
+  <button class="tabbtn" data-tab="stats" aria-selected="false">Stats</button>
+  <button class="tabbtn" data-tab="data" aria-selected="false">Data</button>
+</div></nav>
+
+<main>
+  <section id="view-closet"></section>
+  <section id="view-log" hidden></section>
+  <section id="view-pair" hidden></section>
+  <section id="view-stats" hidden></section>
+  <section id="view-data" hidden></section>
+</main>
+
+<div class="selbar" id="selbar" role="toolbar" aria-label="Selected items actions">
+  <span class="n" id="selcount">0</span>
+  <button class="btn sm" id="sb-log">Log wear</button>
+  <button class="btn sm" id="sb-pair">Save pairing</button>
+  <button class="btn sm accent" id="sb-suggest">Suggest matches</button>
+  <button class="btn sm" id="sb-share">Share</button>
+  <button class="btn sm ghost" id="sb-clear" style="color:#cfc9dd">Clear</button>
+</div>
+
+<div id="modalroot"></div>
+<div id="toasts" aria-live="polite"></div>
+
+<footer>
+  Wear log, ratings and photos are stored only in this browser — export a backup from the Data tab now and then.
+</footer>
+<script>
+'use strict';
+/* ============================================================
+   SEED DATA — imported from the Google Sheet ("items" tab)
+   ============================================================ */
+function I(id,name,o){return Object.assign({id,name,desc:'',cat:'',sub:'',c1:'',c2:'',pat:'',mat:'',brand:'',size:'',form:null,warm:null,occ:[],sea:[],acq:'',worn:[],notes:'',care:'',photo:'',dep:false},o||{});}
+const SEED_ITEMS=[
+I(1,'UA black tech pants',{cat:'bottom',c1:'black',brand:'Under Armour',worn:['2024-WT']}),
+I(2,'Black wedge ankle boots',{cat:'shoes',c1:'black',brand:'Adrienne Vittadini',worn:['2024-WT']}),
+I(3,'Black thin ruched dress',{desc:'to be worn over turtleneck',cat:'dress',c1:'black',worn:['2024-WT']}),
+I(4,'Thin pink puffer - Uniqlo',{cat:'coat',c1:'pink',brand:'Uniqlo',worn:['2024-WT']}),
+I(5,'Thin grey wool turtleneck',{cat:'top',sub:'sweater',c1:'grey',worn:['2024-WT'],notes:'mom says too piled',dep:true}),
+I(6,'Brown wool pencil skirt - long',{cat:'bottom',sub:'skirt',c1:'brown',worn:['2024-WT'],notes:'Too old-fashioned, mom took back',dep:true}),
+I(7,'Lavender Patagonia fleece',{cat:'top',c1:'lavender',brand:'Patagonia',warm:4,worn:['2024-WT']}),
+I(8,'Soft brown pinstripe pants - wide',{cat:'bottom',sub:'slacks',c1:'brown',pat:'stripe',brand:'Jones New York',form:2,warm:3,sea:['fall','winter'],worn:['2024-WT'],notes:'pair with olive green sweater',care:'Dry clean only'}),
+I(9,'Soft red wool sweater',{cat:'top',sub:'sweater',c1:'red',form:2,worn:['2024-WT']}),
+I(10,'Grey wool dress pants',{cat:'bottom',sub:'dress pants',c1:'grey',brand:'Brooks Brothers',worn:['2024-WT'],notes:'Runs tight, tuck shirt'}),
+I(11,'Compression socks - tan',{cat:'underlayer',worn:['2024-WT']}),
+I(12,'Compression socks - black',{cat:'underlayer',worn:['2024-WT']}),
+I(13,'Pink Uniqlo button-down',{cat:'top',c1:'pink',worn:['2024-WT','2026-OFC'],notes:'worn with thin grey turtleneck inside, under navy blazer'}),
+I(14,'Red/purple cashmere long coat',{cat:'coat',c1:'purple',c2:'red',worn:['2024-WT']}),
+I(15,'Thick white turtleneck - Uniqlo',{cat:'top',sub:'turtleneck',c1:'white',brand:'Uniqlo',worn:['2024-WT']}),
+I(16,'Pink silk under-shirt',{cat:'underlayer',worn:['2024-WT']}),
+I(17,'Pink silk under-pants',{cat:'underlayer',worn:['2024-WT']}),
+I(18,'Teal romper - thin breathable athleisure',{cat:'dress',sub:'romper',c1:'teal',form:1,warm:2,occ:['casual','vacation'],sea:['summer'],acq:'2026-04'}),
+I(19,'White linen pants',{cat:'bottom',c1:'white',warm:3,sea:['summer'],worn:['2025-ST'],notes:'Summer - surprisingly thick/warm'}),
+I(20,'Pale pink rough-silk dress',{cat:'dress',c1:'pink',form:3,worn:['2025-ST']}),
+I(21,'Purple rough-silk dress',{cat:'dress',sub:'cocktail dress',c1:'purple',brand:'Hugo Busceti',form:3,occ:['cocktail','semi','dinner'],worn:['2025-ST']}),
+I(22,'Blue/white striped linen skirt',{cat:'bottom',c1:'blue',c2:'white',pat:'stripe',occ:['casual','church','vacation'],sea:['summer'],worn:['2025-ST'],notes:'pair with round-neck tee (white, dark blue, light blue, grey — summer colour)'}),
+I(23,'Blue linen blazer',{cat:'outerwear',sub:'blazer',c1:'blue',worn:['2025-ST'],notes:'Very soft'}),
+I(24,'Off-white linen blazer',{cat:'outerwear',sub:'blazer',c1:'white',pat:'solid',worn:['2025-ST']}),
+I(25,'Qipao cocktail dress',{cat:'dress',sub:'cocktail dress',c1:'mint',pat:'floral',form:4,occ:['cocktail','wedding'],notes:'(Wedding: Alicia/Zach 2025, Mihir 2023; Party: McKinsey 2019)'}),
+I(26,'Floral cocktail dress',{cat:'dress',sub:'cocktail dress',c1:'cream',pat:'floral',brand:'Brooks Brothers',form:4,occ:['wedding','cocktail','semi'],sea:['summer','spring'],notes:'(Engagement photos, Ross wedding)'}),
+I(27,'Pale lavender cashmere sweater',{cat:'top',sub:'sweater',c1:'lavender',worn:['2025-ST']}),
+I(28,'Black long-sleeved body-con dress',{cat:'dress',sub:'formal dress',c1:'black',pat:'solid',form:5,occ:['evening'],notes:'(Party: Lightsynq 11/2024)'}),
+I(29,'Black halter backless jumpsuit',{cat:'dress',sub:'romper',c1:'black',pat:'solid',form:5,occ:['evening','wedding'],notes:'(Party: IonQ 06/2025)'}),
+I(30,'Wool grey coat',{cat:'outerwear',sub:'coat',c1:'grey'}),
+I(31,'Black long sheath with scarf tie',{desc:'sleeveless halter',cat:'dress',c1:'black',brand:'C/MEO Collective',form:4,occ:['evening','wedding','cocktail'],worn:['2025-NYE'],notes:'Business w/ long blazer, wedding w/ leopard jacket; worn NYE 2025'}),
+I(32,'Thick leather skirt (many zippers)',{cat:'bottom',c1:'black',mat:'leather',brand:'DKNY Jeans',worn:['2025-WT'],notes:'Wear with bootie, thick pale green sweater or grey merino sweatshirt',dep:true}),
+I(33,'Rib-knit pale green sweater',{desc:'thick/chunky',cat:'top',sub:'sweater',c1:'green',pat:'solid',mat:'cotton|nylon|viscose',worn:['2025-WT'],notes:'Wear thin silk undershirt or cami inside'}),
+I(34,'Metallic pleat skirt',{cat:'bottom',sub:'skirt',c1:'green',c2:'olive',pat:'solid',brand:'Ann Taylor',occ:['casual','semi'],worn:['2025-WT'],notes:'Goes w/ high quality form-fitting black turtleneck, either leather jacket or short leopard cardigan; any black tshirt'}),
+I(35,'Olive green knitted dress',{desc:'short-sleeve',cat:'dress',c1:'green',c2:'olive',pat:'solid',brand:'Loft',form:2,warm:3,occ:['casual','semi','vacation'],sea:['spring','fall','winter'],notes:'Paired with BRG silk bomber, tasseled hard tan shoes'}),
+I(36,'British racing green silk bomber',{cat:'outerwear',sub:'jacket',c1:'green'}),
+I(37,'Black silky strap dress',{cat:'dress',c1:'black',brand:'Nicole Miller',form:2,occ:['casual','dinner','semi'],notes:'Paired with white thin turtleneck inside, black leather jacket, black boots'}),
+I(38,'Bright blue short romper',{cat:'dress',sub:'romper',c1:'blue',pat:'solid',form:4,warm:2,occ:['wedding','dinner'],sea:['summer','fall'],notes:"(2025 Molly's wedding)"}),
+I(39,'Orange rough mid-length dress',{cat:'dress',sub:'cocktail dress',c1:'orange',occ:['business','cocktail','wedding','semi'],notes:'(2024 YV Innovation Summit)'}),
+I(40,'Tan pumps',{cat:'shoes',c1:'tan'}),
+I(41,'Camel Theory thin wool pants',{cat:'bottom',sub:'dress pants',c1:'camel',brand:'Theory',form:3,occ:['business'],worn:['2025-SPIE','2026-CSI'],notes:'Pair with white turtleneck, leopard cardigan (or vest); worn at SPIE 2025'}),
+I(42,'Navy blue pantsuit set',{cat:'bottom',sub:'dress pants',c1:'navy',brand:'Banana Republic',size:'2P',form:4,occ:['business'],worn:['2025-Samsung'],notes:'Paired with Circa rectangular block heel, Equipment Femme geometric dress shirt @ Samsung visit 2025'}),
+I(43,'Geometric print dress shirt',{cat:'top',sub:'button-down',c1:'blue',c2:'yellow',pat:'print',brand:'Equipment Femme',worn:['2025-Samsung']}),
+I(44,'Beige-pinkish trousers with crease line',{cat:'bottom',sub:'dress pants',c1:'beige',c2:'pink',pat:'solid',brand:'(Chinese brand)',form:3,occ:['business','semi'],worn:['2025-WT','2026-SPIE'],notes:'Navy or brown sweater, blazer, can wear liner pants; worn with white uniqlo turtleneck at SPIE 2026; wear with pink buttondown and navy-black blazer',care:'Machine wash'}),
+I(45,'Grey/black long-sleeve fake-sweater',{desc:'thin fake layered sweater',cat:'top',c1:'black',c2:'grey',mat:'viscose|wool',brand:'Rag & Bone',form:2,occ:['casual','business'],sea:['fall','spring'],worn:['2025-WT']}),
+I(46,'Burberry riding vest',{cat:'top',sub:'vest',c1:'green',mat:'leather',brand:'Burberry',worn:['2025-WT'],notes:'Worn with metallic skirt, leather skirt, over thin black/grey fake layer sweater',care:'Dry clean / special clean'}),
+I(47,'Thick Daiso tights',{cat:'underlayer',sub:'tights',c1:'black',mat:'polyester',brand:'Daiso',warm:3,worn:['2025-WT']}),
+I(48,'Brown wool sweater - very soft',{cat:'top',sub:'sweater',c1:'brown',mat:'wool',worn:['2025-WT']}),
+I(49,'Silk black chinoiserie pants',{cat:'bottom',c1:'black',pat:'floral',mat:'silk',worn:['2025-WT'],notes:'High waisted, requires belt, paired with uniqlo pink dress shirt'}),
+I(50,'Pink Uniqlo dress shirt',{cat:'top',sub:'button-down',c1:'pink',brand:'Uniqlo',worn:['2025-WT']}),
+I(51,'Tan silk under-shirt',{cat:'underlayer',c1:'tan',mat:'silk',worn:['2025-WT']}),
+I(52,'Tan silk under-pants',{cat:'underlayer',c1:'tan',mat:'silk',worn:['2025-WT']}),
+I(53,'Chambray light grey blazer',{desc:'straight cut - sport jacket',cat:'outerwear',sub:'blazer',c1:'grey',mat:'cotton',brand:'J Crew',form:3,occ:['business'],worn:['2026-OFC','2026-SPIE'],notes:'Worn at SPIE 2026, OFC with navy blue travel pants'}),
+I(54,'Navy blue travel/business pants',{cat:'bottom',sub:'pants',c1:'navy',pat:'solid',brand:'Michael Kors',form:3,occ:['business','travel'],worn:['2026-OFC','2026-SPIE'],notes:'Wear with grey chambray jacket and grey turtleneck or navy knit top (SPIE, OFC)'}),
+I(55,'Mint and black colour blocked dress',{cat:'dress',c1:'mint',c2:'black',pat:'blocked',mat:'wool',brand:'Rachel Roy',form:3,warm:2,occ:['business','semi','dinner','cocktail'],worn:['2026-OFC'],notes:'Wear with black blazer and black heels',care:'Dry clean'}),
+I(56,'Grey dress pants',{desc:'boot cut - thin material',cat:'bottom',sub:'dress pants',c1:'grey',mat:'wool',brand:'J Crew',size:'2P',occ:['business'],care:'Dry clean'}),
+I(57,'Navy-black blazer',{desc:'straight cut - sport jacket',cat:'outerwear',sub:'blazer',c1:'navy',brand:'Loft',occ:['business'],worn:['2026-CSI'],notes:'Wear at CS2026: with knit grey turtleneck / grey trousers or theory beige shortsleeve knit / theory camel pants'}),
+I(58,'Black long-sleeve dress with white panels',{desc:'long-sleeve',cat:'dress',c1:'black',c2:'white',occ:['business'],worn:['2026-CSI']}),
+I(59,'Pink blazer',{cat:'outerwear',sub:'blazer',c1:'pink',form:2,occ:['casual','semi'],notes:'Wear with jeans and turtleneck; grey turtleneck / grey trousers'}),
+I(60,'Quince navy shin-length overcoat',{desc:'hits a few inches past the knee',cat:'outerwear',sub:'coat',c1:'navy',mat:'wool',brand:'Quince',form:4,warm:4,occ:['business','semi'],sea:['fall','spring'],acq:'2026-04',worn:['2026-CSI']}),
+I(61,'Black square-toe heels (2-3in) with buckle decoration',{cat:'shoes',c1:'black',brand:'Circa Joan & David',occ:['business'],worn:['2026-OFC'],notes:'Toes become pinched, need bandaids for pinky outside edge'}),
+I(62,'Navy short-sleeve knit top',{desc:'slightly elastic/crop waist',cat:'top',c1:'navy',mat:'wool',form:2,occ:['casual','business'],worn:['2026-OFC','2025-ST'],notes:'Scratchy and rides up midriff'}),
+I(63,'Oatmeal Theory short-sleeve loose knit',{cat:'top',c1:'cream',c2:'oatmeal',mat:'wool',form:2,occ:['casual','business'],worn:['2026-CSI']}),
+I(64,'Taupe long-sleeve thin cable-knit',{cat:'top',sub:'sweater',c1:'taupe',c2:'tan',pat:'cable-knit',mat:'cotton|polyester',form:2,occ:['casual','business'],worn:['2026-CSI']}),
+I(65,'Uniqlo black tech pants (drawstring)',{desc:'tapered leg - good for travel',cat:'bottom',sub:'tech pants',c1:'black',pat:'solid',brand:'Uniqlo',size:'S',form:1,warm:3,occ:['casual','travel'],sea:['spring','summer','fall']}),
+I(66,'Orange cardigan with embroidery',{cat:'top',sub:'cardigan',c1:'orange',brand:'Anthropologie',form:2,warm:2,occ:['casual'],sea:['summer','fall'],acq:'2026-04'}),
+I(67,'Brown long belted knit dress',{desc:'almost ankle length and tight neck',cat:'dress',c1:'brown',pat:'solid',mat:'acrylic',brand:'Calvin Klein',form:2,warm:3,occ:['casual'],sea:['fall','winter']}),
+I(68,'Tan knee-length coat with fur ruff',{desc:'knee-length',cat:'outerwear',sub:'coat',c1:'tan',pat:'solid',mat:'wool|nylon',brand:'Banana Republic',size:'S',form:4,warm:3,occ:['business','semi'],sea:['fall','spring']}),
+I(69,'Long purple skirt',{desc:'below-knee',cat:'bottom',sub:'skirt',c1:'purple',pat:'solid',form:3,warm:3,occ:['business','semi'],acq:'2026-06'}),
+I(70,'Lavender plaid business pants',{desc:'camel and white plaid checks',cat:'bottom',sub:'trousers',c1:'lavender',c2:'camel',pat:'plaid',mat:'polyester',brand:'Wilfred',size:'2',form:3,warm:4,occ:['business','semi'],sea:['fall','winter'],acq:'2026-06',notes:'Goes with camel, lavender, burgundy tops'}),
+I(71,'Burgundy knit tank top',{desc:'with built-in bra',cat:'top',sub:'tank',c1:'burgundy',pat:'solid',form:2,warm:3,occ:['business','semi'],sea:['spring','summer','fall'],acq:'2026-06'}),
+I(72,'Brown scratchy loose pinstripe pants',{desc:'scratchy material',cat:'bottom',sub:'slacks',c1:'brown',c2:'white',pat:'pinstripe',form:2,warm:3,occ:['business','semi'],acq:'2026-06'}),
+I(73,'Long grey knit form-fitting dress',{desc:'machine washable!',cat:'dress',c1:'grey',pat:'solid',mat:'cotton',brand:'Everlane',size:'XS',form:2,warm:2,occ:['casual','business'],sea:['spring','summer','fall'],acq:'2026-06'}),
+I(74,'Olive green cardigan',{cat:'outerwear',sub:'cardigan',c1:'green',pat:'solid',mat:'silk',brand:'Ann Taylor',size:'S',form:2,warm:3,occ:['casual','semi'],sea:['spring','summer','fall'],acq:'2026-06'}),
+I(75,'Macrame silk sleeveless top',{cat:'top',sub:'tank',c1:'white',c2:'lavender',pat:'solid',mat:'silk',form:2,warm:2,occ:['casual','semi'],sea:['spring','summer'],acq:'2026-06'}),
+I(76,'Leaf green scrunchy dress',{desc:'has in-built cups',cat:'dress',c1:'green',c2:'white',pat:'floral',mat:'rayon',brand:'Angie',size:'S',form:1,warm:2,occ:['casual'],sea:['spring','summer'],acq:'2026-06'})
+];
+
+/* Wear events reconstructed from the sheet's worn_at column.
+   kind 'season' = a whole season tag (weak pairing signal); 'event' = one occasion (strong signal). */
+const SEED_EVENTS=[
+{id:'ev1',date:'2024-12-01',title:'Winter 2024 (2024-WT)',occ:'',items:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],notes:'Season tag imported from sheet',kind:'season',source:'sheet',approx:true},
+{id:'ev2',date:'2025-07-01',title:'Summer 2025 (2025-ST)',occ:'',items:[19,20,21,22,23,24,27,62],notes:'Season tag imported from sheet',kind:'season',source:'sheet',approx:true},
+{id:'ev3',date:'2025-12-01',title:'Winter 2025 (2025-WT)',occ:'',items:[32,33,34,44,45,46,47,48,49,50,51,52],notes:'Season tag imported from sheet',kind:'season',source:'sheet',approx:true},
+{id:'ev4',date:'2025-12-31',title:'New Year\u2019s Eve 2025',occ:'evening',items:[31],notes:'',kind:'event',source:'sheet',approx:true},
+{id:'ev5',date:'2025-08-12',title:'SPIE 2025',occ:'business',items:[41],notes:'',kind:'event',source:'sheet',approx:true},
+{id:'ev6',date:'2025-06-10',title:'Samsung visit 2025',occ:'business',items:[42,43],notes:'With Circa block heels',kind:'event',source:'sheet',approx:true},
+{id:'ev7',date:'2026-03-30',title:'OFC 2026',occ:'business',items:[13,53,54,55,61,62],notes:'',kind:'event',source:'sheet',approx:true},
+{id:'ev8',date:'2026-01-20',title:'CSI 2026',occ:'business',items:[41,57,58,60,63,64],notes:'',kind:'event',source:'sheet',approx:true},
+{id:'ev9',date:'2026-01-28',title:'SPIE 2026',occ:'business',items:[44,53,54],notes:'',kind:'event',source:'sheet',approx:true}
+];
+
+const SHEET_ID_DEFAULT='1EzWL_pFZ0OYEBN6pu3y2xvfGEKqNpWK8MlyJdv3IW3Q';
+const CATS=['top','bottom','dress','outerwear','coat','shoes','underlayer'];
+const OCCASIONS=['casual','business','semi','cocktail','wedding','evening','dinner','travel','vacation','church'];
+const SEASONS=['spring','summer','fall','winter'];
+const COLOR_HEX={black:'#221F26',white:'#F7F5F0',grey:'#9B98A3',gray:'#9B98A3',pink:'#E8B4C0',lavender:'#B6A4D9',brown:'#6F4E37',red:'#B3373C',purple:'#7B5EA7',teal:'#2F8F8F',blue:'#4A6FA5',navy:'#2B3A55',mint:'#AEDCC8',cream:'#F0E7D3',green:'#5F7A50',olive:'#6F7350',orange:'#D2722F',tan:'#C8A478',camel:'#B98E5F',beige:'#DCC9AE',taupe:'#A6968A',oatmeal:'#E0D6C3',burgundy:'#71303F',yellow:'#E3BE4F'};
+const DEF_HEX='#C9C5D1';
+const HUES={red:0,burgundy:350,pink:340,blush:345,orange:25,brown:28,taupe:30,camel:35,tan:38,beige:40,oatmeal:42,cream:45,yellow:50,olive:75,green:115,mint:150,teal:178,blue:215,navy:222,lavender:270,purple:282};
+const NEUTRALS=new Set(['black','white','grey','gray','cream','beige','tan','camel','taupe','oatmeal','navy','brown','ivory','charcoal','silver','offwhite','off-white']);
+
+/* ============================================================
+   UTILITIES, PERSISTENCE, SWATCHES
+   ============================================================ */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=> 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+function toast(msg,err){const t=document.createElement('div');t.className='toast'+(err?' err':'');t.textContent=msg;$('#toasts').appendChild(t);setTimeout(()=>t.remove(),3400);}
+
+let warnedPersist=false;
+const mem={};
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return (k in mem)?mem[k]:d;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){mem[k]=v;if(!warnedPersist){warnedPersist=true;toast('Preview mode: changes won\u2019t persist here. Host the file (see Data tab) for full saving.',true);}}},
+  del(k){try{localStorage.removeItem(k);}catch(e){delete mem[k];}}
+};
+
+/* tiny IndexedDB key-value store (for photos) with in-memory fallback */
+const memKV=new Map();
+let _idb=null;
+function idbOpen(){
+  if(_idb)return _idb;
+  _idb=new Promise((res)=>{ try{
+    const r=indexedDB.open('wardrobe-kv',1);
+    r.onupgradeneeded=()=>r.result.createObjectStore('kv');
+    r.onsuccess=()=>res(r.result);
+    r.onerror=()=>res(null);
+  }catch(e){res(null);} });
+  return _idb;
+}
+async function idbGet(k){const db=await idbOpen();if(!db)return memKV.get(k);
+  return new Promise(res=>{try{const t=db.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>res(t.result);t.onerror=()=>res(undefined);}catch(e){res(memKV.get(k));}});}
+async function idbSet(k,v){const db=await idbOpen();if(!db){memKV.set(k,v);return;}
+  return new Promise(res=>{try{const t=db.transaction('kv','readwrite').objectStore('kv').put(v,k);t.onsuccess=()=>res();t.onerror=()=>{memKV.set(k,v);res();};}catch(e){memKV.set(k,v);res();}});}
+async function idbDel(k){const db=await idbOpen();if(!db){memKV.delete(k);return;}
+  return new Promise(res=>{try{const t=db.transaction('kv','readwrite').objectStore('kv').delete(k);t.onsuccess=()=>res();t.onerror=()=>res();}catch(e){res();}});}
+async function idbKeys(){const db=await idbOpen();if(!db)return [...memKV.keys()];
+  return new Promise(res=>{try{const t=db.transaction('kv').objectStore('kv').getAllKeys();t.onsuccess=()=>res(t.result||[]);t.onerror=()=>res([...memKV.keys()]);}catch(e){res([...memKV.keys()]);}});}
+
+/* ---------- app state ---------- */
+const DEFAULT_W={color:1.0,pattern:0.5,form:0.8,warm:0.3,season:0.6,occ:0.7,co:0.9,rated:1.5,bias:0};
+let items=store.get('wd.items',null)||SEED_ITEMS.map(x=>({...x}));
+let wearLog=store.get('wd.log',null)||SEED_EVENTS.map(x=>({...x}));
+let pairings=store.get('wd.pairs',[]);
+let W=Object.assign({},DEFAULT_W,store.get('wd.weights',{}));
+let prefs=Object.assign({view:'grid',hideDep:true,sheetId:SHEET_ID_DEFAULT},store.get('wd.prefs',{}));
+let trainCount=store.get('wd.traincount',0);
+const saveItems=()=>{store.set('wd.items',items);refreshMaps();};
+const saveLog=()=>{store.set('wd.log',wearLog);_co=null;};
+const savePairs=()=>{store.set('wd.pairs',pairings);_rated=null;};
+const saveW=()=>{store.set('wd.weights',W);store.set('wd.traincount',trainCount);};
+const savePrefs=()=>store.set('wd.prefs',prefs);
+
+let _byId=new Map();
+function refreshMaps(){_byId=new Map(items.map(it=>[Number(it.id),it]));}
+refreshMaps();
+const byId=id=>_byId.get(Number(id));
+const activeItems=()=>items.filter(it=>!it.dep);
+
+/* ---------- color & swatch helpers ---------- */
+function hex2rgb(h){h=h.replace('#','');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+function lum(h){const[r,g,b]=hex2rgb(h);return (0.2126*r+0.7152*g+0.0722*b)/255;}
+function shade(h,f){const[r,g,b]=hex2rgb(h);const m=v=>Math.max(0,Math.min(255,Math.round(v*f)));return `rgb(${m(r)},${m(g)},${m(b)})`;}
+const hexOf=c=>COLOR_HEX[(c||'').toLowerCase().trim()]||DEF_HEX;
+function nameOnSwatch(it){return !it.c1;}
+function swatchCSS(it){
+  const a=hexOf(it.c1||''),hasB=!!it.c2,b=hasB?hexOf(it.c2):shade(a,1.25);
+  const p=(it.pat||'').toLowerCase();
+  let img='linear-gradient(160deg,rgba(255,255,255,.18),rgba(0,0,0,.10))',size='auto';
+  if(p.includes('pinstripe'))img=`repeating-linear-gradient(90deg,transparent 0 13px,${hasB?b:'rgba(255,255,255,.7)'} 13px 15px)`;
+  else if(p.includes('stripe'))img=`repeating-linear-gradient(90deg,transparent 0 14px,${b} 14px 24px)`;
+  else if(p.includes('plaid'))img=`repeating-linear-gradient(0deg,${b}55 0 5px,transparent 5px 20px),repeating-linear-gradient(90deg,${b}55 0 5px,transparent 5px 20px)`;
+  else if(p.includes('floral')){img=`radial-gradient(circle,${hasB?b:'rgba(255,255,255,.75)'} 0 5px,transparent 6px)`;size='34px 34px';}
+  else if(p.includes('print')){img=`repeating-conic-gradient(${b}66 0 25%,transparent 0 50%)`;size='30px 30px';}
+  else if(p.includes('block'))img=`linear-gradient(135deg,transparent 0 55%,${b} 55%)`;
+  else if(p.includes('cable'))img=`repeating-linear-gradient(45deg,rgba(255,255,255,.22) 0 5px,transparent 5px 12px),repeating-linear-gradient(-45deg,rgba(0,0,0,.10) 0 5px,transparent 5px 12px)`;
+  else if(hasB)img=`linear-gradient(315deg,${b} 0 24%,transparent 24.5%),linear-gradient(160deg,rgba(255,255,255,.18),rgba(0,0,0,.10))`;
+  const stitch=lum(a)>0.62?'rgba(0,0,0,.22)':'rgba(255,255,255,.5)';
+  const icink=lum(a)>0.62?'rgba(0,0,0,.45)':'rgba(255,255,255,.7)';
+  return `background-color:${a};background-image:${img};background-size:${size};--stitch:${stitch};--icink:${icink}`;
+}
+/* category icons (minimal line glyphs) */
+const ICONS={
+  top:'M7 3l5 2 5-2 4 4-2.5 4L17 9.6V21H7V9.6L5.5 11 3 7z',
+  bottom:'M7 3h10l2 18h-5l-2-12-2 12H5z',
+  dress:'M9 3l3 3 3-3-1 5 4 13H6L10 8z',
+  shoes:'M3 18c2-1 3-4 3-8l3-1c2 5 6 7 12 8v3H3z',
+  outerwear:'M8 3l4 2 4-2 4 4-2 5-1.5-2V21H7V10L5.5 12l-2-5z',
+  coat:'M8 3l4 2 4-2 4 4-2 5-1.5-2v11h-3v-7h-3v7H7V10L5.5 12l-2-5z',
+  underlayer:'M5 8h10v4H9v4H5zM11 6h8v4h-4v4h-4z'
+};
+const ic=(cat,sz=18)=>`<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="${ICONS[cat]||ICONS.top}"/></svg>`;
+
+/* ---------- photos ----------
+   Resolution order for each item, highest priority first:
+     1. a photo you uploaded in-app (stored in this browser only)  \u2014 a per-device override
+     2. an explicit Photo URL typed into the item
+     3. a static file in the photos/ folder named by id, e.g. photos/41.jpg
+     4. nothing \u2192 the generated colour swatch
+   The photos/ folder is the canonical, shared, cross-device source. */
+const PHOTO_DIR='photos/';
+const PHOTO_EXTS=['jpg','jpeg','png','webp'];          // web-renderable; HEIC won't display in browsers
+const photoUpload=new Map();    // id -> dataURL (mirror of IndexedDB uploads)
+const photoResolved=new Map();  // id -> url|null (cached best source for this session)
+let photoManifest=null;         // optional {id:'filename'} from photos/manifest.json; null = probe instead
+function photoFilename(it){return PHOTO_DIR+it.id+'.jpg';} // suggested name to save (any of PHOTO_EXTS works)
+function invalidatePhoto(id){photoResolved.delete(Number(id));}
+async function loadPhotoManifest(){
+  try{
+    const r=await fetch(PHOTO_DIR+'manifest.json',{cache:'no-store'});
+    if(!r.ok)return;
+    const j=await r.json();photoManifest={};
+    if(Array.isArray(j))j.forEach(f=>{photoManifest[String(f).split('.')[0]]=f;});
+    else for(const[k,v]of Object.entries(j))photoManifest[k]=/\./.test(String(v))?v:k+'.'+v;
+  }catch(e){/* no manifest \u2192 fall back to probing */}
+}
+function probeStatic(id){
+  return new Promise(res=>{
+    let i=0;
+    (function next(){
+      if(i>=PHOTO_EXTS.length)return res(null);
+      const url=PHOTO_DIR+id+'.'+PHOTO_EXTS[i++];
+      const im=new Image();
+      im.onload=()=>res(url); im.onerror=next; im.src=url;
+    })();
+  });
+}
+async function resolvePhoto(it){
+  const id=Number(it.id);
+  if(photoResolved.has(id))return photoResolved.get(id);
+  let url=null;
+  if(photoUpload.has(id))url=photoUpload.get(id);
+  if(!url){try{const up=await idbGet('photo:'+id);if(up){photoUpload.set(id,up);url=up;}}catch(e){}}
+  if(!url&&it.photo)url=it.photo;
+  if(!url&&photoManifest&&photoManifest[id])url=PHOTO_DIR+photoManifest[id];
+  if(!url&&!photoManifest)url=await probeStatic(id);
+  photoResolved.set(id,url);
+  return url;
+}
+function lazyPhotos(scope){
+  $$('[data-photo]',scope||document).forEach(el=>{
+    if(el.dataset.pdone)return;
+    const id=Number(el.dataset.photo);
+    const it=byId(id)||{id,photo:''};
+    resolvePhoto(it).then(url=>{if(url){setImg(el,url);el.dataset.pdone='1';}});
+  });
+}
+function setImg(el,url){ if(el.querySelector('img'))return; const img=document.createElement('img'); img.src=url; img.alt=''; img.loading='lazy'; img.onerror=()=>img.remove(); el.prepend(img); }
+function miniHTML(it,cls='mini'){
+  return `<span class="${cls}" data-photo="${it.id}" style="${esc(swatchCSS(it))}" title="${esc(it.name)}"></span>`;
+}
+
+/* ============================================================
+   MODAL FRAMEWORK
+   ============================================================ */
+function openModal(html){
+  closeModal();
+  const root=$('#modalroot');
+  root.innerHTML=`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
+  const scrim=root.firstElementChild;
+  scrim.addEventListener('mousedown',e=>{if(e.target===scrim)closeModal();});
+  document.addEventListener('keydown',escClose);
+  return scrim.querySelector('.sheet');
+}
+function escClose(e){if(e.key==='Escape')closeModal();}
+function closeModal(){$('#modalroot').innerHTML='';document.removeEventListener('keydown',escClose);}
+
+/* ============================================================
+   CLOSET VIEW
+   ============================================================ */
+const F={q:'',cat:'all',color:'',season:'',occ:'',form:'',sort:'id'};
+const SEL=new Set();
+let selMode=false;
+
+function wearCounts(){const m=new Map();for(const e of wearLog)for(const id of (e.items||[]))m.set(Number(id),(m.get(Number(id))||0)+1);return m;}
+function lastWorn(id){let best='';for(const e of wearLog)if((e.items||[]).map(Number).includes(Number(id))&&e.date>best)best=e.date;return best;}
+function colorOptions(){const s=new Set();items.forEach(it=>{if(it.c1)s.add(it.c1.toLowerCase());if(it.c2)s.add(it.c2.toLowerCase());});return [...s].sort();}
+function occOptions(){const s=new Set(OCCASIONS);items.forEach(it=>(it.occ||[]).forEach(o=>s.add(o)));return [...s];}
+
+function filteredItems(){
+  const q=F.q.toLowerCase();
+  let list=items.filter(it=>{
+    if(prefs.hideDep&&it.dep)return false;
+    if(F.cat!=='all'&&it.cat!==F.cat)return false;
+    if(F.color&&!( (it.c1||'').toLowerCase()===F.color||(it.c2||'').toLowerCase()===F.color))return false;
+    if(F.season&&!(it.sea||[]).includes(F.season))return false;
+    if(F.occ&&!(it.occ||[]).includes(F.occ))return false;
+    if(F.form&&String(it.form||'')!==F.form)return false;
+    if(q){const hay=`${it.name} ${it.desc} ${it.brand} ${it.sub} ${it.c1} ${it.c2} ${it.mat} ${it.notes}`.toLowerCase();if(!hay.includes(q))return false;}
+    return true;
+  });
+  const wc=wearCounts();
+  const sorters={
+    id:(a,b)=>a.id-b.id, name:(a,b)=>a.name.localeCompare(b.name),
+    most:(a,b)=>(wc.get(b.id)||0)-(wc.get(a.id)||0), least:(a,b)=>(wc.get(a.id)||0)-(wc.get(b.id)||0),
+    newest:(a,b)=>(b.acq||'').localeCompare(a.acq||'')||b.id-a.id
+  };
+  return list.sort(sorters[F.sort]||sorters.id);
+}
+
+function renderCloset(){
+  const v=$('#view-closet');
+  const wc=wearCounts();
+  const list=filteredItems();
+  const cats=['all',...CATS];
+  v.innerHTML=`
+  <div class="toolbar">
+    <div class="grow"><input type="search" id="q" placeholder="Search name, brand, colour, notes\u2026" value="${esc(F.q)}" aria-label="Search items"></div>
+    <div class="seg" role="group" aria-label="View">
+      <button id="vw-grid" aria-pressed="${prefs.view==='grid'}">Photos</button>
+      <button id="vw-list" aria-pressed="${prefs.view==='list'}">Descriptions</button>
+    </div>
+    <button class="btn sm ${selMode?'accent':''}" id="selmode">${selMode?'Selecting\u2026':'Select'}</button>
+    <button class="btn sm primary" id="additem">+ New item</button>
+  </div>
+  <div class="pillrow" role="group" aria-label="Category">${cats.map(c=>`<button class="pill" data-cat="${c}" aria-pressed="${F.cat===c}">${c==='all'?'all \u00b7 '+list.length:c}</button>`).join('')}</div>
+  <div class="filters">
+    <select id="f-color" aria-label="Colour"><option value="">colour: any</option>${colorOptions().map(c=>`<option ${F.color===c?'selected':''} value="${esc(c)}">${esc(c)}</option>`).join('')}</select>
+    <select id="f-season" aria-label="Season"><option value="">season: any</option>${SEASONS.map(s=>`<option ${F.season===s?'selected':''}>${s}</option>`).join('')}</select>
+    <select id="f-occ" aria-label="Occasion"><option value="">occasion: any</option>${occOptions().map(o=>`<option ${F.occ===o?'selected':''}>${esc(o)}</option>`).join('')}</select>
+    <select id="f-form" aria-label="Formality"><option value="">formality: any</option>${[1,2,3,4,5].map(n=>`<option ${F.form==String(n)?'selected':''} value="${n}">formality ${n}</option>`).join('')}</select>
+    <select id="f-sort" aria-label="Sort"><option value="id">sort: sheet order</option><option value="name" ${F.sort==='name'?'selected':''}>name</option><option value="most" ${F.sort==='most'?'selected':''}>most worn</option><option value="least" ${F.sort==='least'?'selected':''}>least worn</option><option value="newest" ${F.sort==='newest'?'selected':''}>newest</option></select>
+    <label class="chk"><input type="checkbox" id="hidedep" ${prefs.hideDep?'checked':''}> hide retired</label>
+  </div>
+  ${list.length? (prefs.view==='grid'? gridHTML(list,wc) : listHTML(list,wc)) : `<div class="empty"><b>Nothing matches</b>Try clearing a filter or two.</div>`}`;
+
+  $('#q',v).addEventListener('input',e=>{F.q=e.target.value;renderCloset();});
+  $('#vw-grid',v).onclick=()=>{prefs.view='grid';savePrefs();renderCloset();};
+  $('#vw-list',v).onclick=()=>{prefs.view='list';savePrefs();renderCloset();};
+  $('#selmode',v).onclick=()=>{selMode=!selMode;if(!selMode)SEL.clear();updateSelbar();renderCloset();};
+  $('#additem',v).onclick=()=>openItem(null);
+  $$('.pill[data-cat]',v).forEach(p=>p.onclick=()=>{F.cat=p.dataset.cat;renderCloset();});
+  $('#f-color',v).onchange=e=>{F.color=e.target.value;renderCloset();};
+  $('#f-season',v).onchange=e=>{F.season=e.target.value;renderCloset();};
+  $('#f-occ',v).onchange=e=>{F.occ=e.target.value;renderCloset();};
+  $('#f-form',v).onchange=e=>{F.form=e.target.value;renderCloset();};
+  $('#f-sort',v).onchange=e=>{F.sort=e.target.value;renderCloset();};
+  $('#hidedep',v).onchange=e=>{prefs.hideDep=e.target.checked;savePrefs();renderCloset();};
+  $$('[data-itid]',v).forEach(el=>el.onclick=()=>{
+    const id=Number(el.dataset.itid);
+    if(selMode){SEL.has(id)?SEL.delete(id):SEL.add(id);updateSelbar();el.classList.toggle('selected',SEL.has(id));}
+    else openItem(id);
+  });
+  lazyPhotos(v);
+}
+function gridHTML(list,wc){
+  return `<div class="grid">${list.map(it=>`
+    <button class="card ${it.dep?'dep':''} ${SEL.has(it.id)?'selected':''}" data-itid="${it.id}">
+      <span class="sw" data-photo="${it.id}" style="${esc(swatchCSS(it))}">
+        <span class="stitch"></span><span class="cat-ic">${ic(it.cat)}</span><span class="selmark">\u2713</span>
+      </span>
+      <span class="meta"><span class="nm">${esc(it.name)}</span>
+      <span class="sub"><span class="tag">${it.id}</span>${it.dep?'<span class="tag bad">retired</span>':''}<span class="wear">${wc.get(it.id)?'\u00d7'+wc.get(it.id):''}</span></span></span>
+    </button>`).join('')}</div>`;
+}
+function listHTML(list,wc){
+  return `<div class="lrows">${list.map(it=>`
+    <button class="lrow ${it.dep?'dep':''} ${SEL.has(it.id)?'selected':''}" data-itid="${it.id}">
+      <span class="mini" data-photo="${it.id}" style="${esc(swatchCSS(it))}"></span>
+      <span><span class="nm">${esc(it.name)}</span><br><span class="dim">${esc([it.brand,it.desc].filter(Boolean).join(' \u00b7 '))}</span></span>
+      <span class="dim col-h">${esc(it.cat)}${it.sub?' \u00b7 '+esc(it.sub):''}</span>
+      <span class="dim col-h">${esc([it.c1,it.c2].filter(Boolean).join(' / '))}${it.pat&&it.pat!=='solid'?' \u00b7 '+esc(it.pat):''}</span>
+      <span class="dim col-h">${(it.occ||[]).map(o=>`<span class="chip">${esc(o)}</span>`).join(' ')}</span>
+      <span class="dim" style="text-align:right">${it.form?'F'+it.form:''}${it.warm?' W'+it.warm:''}<br>${wc.get(it.id)?'\u00d7'+wc.get(it.id)+' worn':''}</span>
+    </button>`).join('')}</div>`;
+}
+function updateSelbar(){
+  const bar=$('#selbar');
+  bar.classList.toggle('on',SEL.size>0);
+  $('#selcount').textContent=SEL.size;
+  $('#sb-pair').disabled=SEL.size<2;
+  $('#sb-share').disabled=SEL.size<2;
+}
+
+/* ============================================================
+   ITEM DETAIL / EDIT
+   ============================================================ */
+function chipToggles(name,options,selected){
+  return `<div class="chips" data-chips="${name}">${options.map(o=>`<button type="button" class="pill" data-val="${esc(o)}" aria-pressed="${selected.includes(o)}">${esc(o)}</button>`).join('')}</div>`;
+}
+function readChips(sheet,name){return $$(`[data-chips="${name}"] .pill[aria-pressed="true"]`,sheet).map(b=>b.dataset.val);}
+
+function openItem(id){
+  const isNew=id==null;
+  const it=isNew? I(Math.max(0,...items.map(x=>x.id))+1,'',{}) : byId(id);
+  if(!it)return;
+  const wc=wearCounts();
+  const hist=wearLog.filter(e=>(e.items||[]).map(Number).includes(it.id)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const sheet=openModal(`
+    <div class="shead"><h3>${isNew?'New item':esc(it.name)||'Item'}</h3>
+      <span class="tag">${it.id}</span><button class="xbtn" data-x aria-label="Close">\u2715</button></div>
+    <div class="bigsw" data-photo="${it.id}" style="${esc(swatchCSS(it))}"><span class="stitch"></span></div>
+    <div class="fieldrow">
+      <div style="flex:2;min-width:200px"><label class="fld">Name</label><input type="text" id="e-name" value="${esc(it.name)}" style="width:100%"></div>
+      <div><label class="fld">Brand</label><input type="text" id="e-brand" value="${esc(it.brand)}" style="width:100%"></div>
+      <div><label class="fld">Size</label><input type="text" id="e-size" value="${esc(it.size)}" style="width:100%"></div>
+    </div>
+    <label class="fld">Description</label><input type="text" id="e-desc" value="${esc(it.desc)}" style="width:100%">
+    <div class="fieldrow">
+      <div><label class="fld">Category</label><select id="e-cat" style="width:100%">${CATS.map(c=>`<option ${it.cat===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div><label class="fld">Subcategory</label><input type="text" id="e-sub" value="${esc(it.sub)}" style="width:100%"></div>
+      <div><label class="fld">Pattern</label><input type="text" id="e-pat" value="${esc(it.pat)}" placeholder="solid / stripe / plaid\u2026" style="width:100%"></div>
+    </div>
+    <div class="fieldrow">
+      <div><label class="fld">Primary colour</label><input type="text" id="e-c1" value="${esc(it.c1)}" style="width:100%"></div>
+      <div><label class="fld">Secondary colour</label><input type="text" id="e-c2" value="${esc(it.c2)}" style="width:100%"></div>
+      <div><label class="fld">Material</label><input type="text" id="e-mat" value="${esc(it.mat)}" style="width:100%"></div>
+    </div>
+    <div class="fieldrow">
+      <div><label class="fld">Formality (1\u20135)</label><input type="number" id="e-form" min="1" max="5" value="${it.form??''}" style="width:100%"></div>
+      <div><label class="fld">Warmth (1\u20135)</label><input type="number" id="e-warm" min="1" max="5" value="${it.warm??''}" style="width:100%"></div>
+      <div><label class="fld">Acquired</label><input type="text" id="e-acq" value="${esc(it.acq)}" placeholder="2026-06" style="width:100%"></div>
+    </div>
+    <label class="fld">Occasions</label>${chipToggles('occ',[...new Set([...OCCASIONS,...(it.occ||[])])],it.occ||[])}
+    <label class="fld">Seasons</label>${chipToggles('sea',SEASONS,it.sea||[])}
+    <label class="fld">Notes</label><textarea id="e-notes">${esc(it.notes)}</textarea>
+    <div class="fieldrow">
+      <div><label class="fld">Care</label><input type="text" id="e-care" value="${esc(it.care)}" style="width:100%"></div>
+      <div><label class="fld">Photo URL (optional \u2014 folder is automatic)</label><input type="url" id="e-photo" value="${esc(it.photo)}" style="width:100%"></div>
+    </div>
+    <div class="fieldrow" style="align-items:center;margin-top:10px">
+      <label class="chk" style="font-size:13px"><input type="checkbox" id="e-dep" ${it.dep?'checked':''}> retired / deprecated</label>
+      <label class="btn sm" style="display:inline-block">Take / upload photo<input type="file" id="e-file" accept="image/*" hidden></label>
+      <button class="btn sm ghost" id="e-rmphoto">Remove uploaded</button>
+    </div>
+    <p class="hint" style="margin-top:6px">Folder photo for this item: <code>${esc(photoFilename(it))}</code> (any of .jpg/.jpeg/.png/.webp). A photo you upload here is saved on this device only and overrides the folder copy until you tap \u201cRemove uploaded\u201d.</p>
+    ${!isNew?`
+    <hr class="seam">
+    <h3 style="font:400 18px var(--disp);margin:0 0 4px">Worn ${wc.get(it.id)||0}\u00d7</h3>
+    ${hist.length?hist.map(e=>`<div style="font-size:13px;margin:3px 0"><span class="tag">${esc(e.date||'')}</span> ${esc(e.title||'')} ${e.approx?'<span class="chip">approx</span>':''}</div>`).join(''):'<p class="hint">Not in the wear log yet.</p>'}
+    <hr class="seam">
+    <h3 style="font:400 18px var(--disp);margin:0 0 4px">Pairs well with</h3>
+    <div id="e-matches"><p class="hint">\u2026</p></div>`:''}
+    <div class="fieldrow" style="margin-top:16px">
+      <button class="btn primary" id="e-save">${isNew?'Add item':'Save changes'}</button>
+      ${!isNew?'<button class="btn" id="e-log">Log a wear</button><button class="btn danger" id="e-del">Delete</button>':''}
+    </div>`);
+  $('[data-x]',sheet).onclick=closeModal;
+  $$('.chips .pill',sheet).forEach(b=>b.onclick=()=>b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true'));
+  $('#e-file',sheet).addEventListener('change',e=>{
+    const f=e.target.files[0];if(!f)return;
+    handlePhotoFile(f,it.id,url=>{const bs=$('.bigsw',sheet);bs.innerHTML='<span class="stitch"></span>';const img=document.createElement('img');img.src=url;bs.prepend(img);toast('Photo attached');});
+  });
+  $('#e-rmphoto',sheet).onclick=async()=>{await idbDel('photo:'+it.id);photoUpload.delete(Number(it.id));invalidatePhoto(it.id);const bs=$('.bigsw',sheet);bs.querySelector('img')?.remove();delete bs.dataset.pdone;const url=await resolvePhoto(it);if(url)setImg(bs,url);toast('Reverted to folder photo / swatch');};
+  $('#e-save',sheet).onclick=()=>{
+    it.name=$('#e-name',sheet).value.trim()||'Untitled';
+    it.brand=$('#e-brand',sheet).value.trim(); it.size=$('#e-size',sheet).value.trim();
+    it.desc=$('#e-desc',sheet).value.trim(); it.cat=$('#e-cat',sheet).value; it.sub=$('#e-sub',sheet).value.trim();
+    it.pat=$('#e-pat',sheet).value.trim(); it.c1=$('#e-c1',sheet).value.trim(); it.c2=$('#e-c2',sheet).value.trim();
+    it.mat=$('#e-mat',sheet).value.trim();
+    it.form=parseInt($('#e-form',sheet).value)||null; it.warm=parseInt($('#e-warm',sheet).value)||null;
+    it.acq=$('#e-acq',sheet).value.trim(); it.notes=$('#e-notes',sheet).value.trim(); it.care=$('#e-care',sheet).value.trim();
+    it.photo=$('#e-photo',sheet).value.trim(); it.dep=$('#e-dep',sheet).checked;
+    it.occ=readChips(sheet,'occ'); it.sea=readChips(sheet,'sea');
+    if(isNew)items.push(it);
+    saveItems();closeModal();renderAll();toast(isNew?('Item added \u2014 photo file: '+photoFilename(it)):'Saved');
+  };
+  if(!isNew){
+    $('#e-log',sheet).onclick=()=>{logModal(null,[it.id]);};
+    $('#e-del',sheet).onclick=()=>{
+      if(!confirm('Delete this item? Wear-log entries keep its id.'))return;
+      items=items.filter(x=>x.id!==it.id);saveItems();closeModal();renderAll();toast('Deleted');
+    };
+    setTimeout(()=>{
+      const box=$('#e-matches',sheet);if(!box)return;
+      const sugg=suggestForIds([it.id]).flatMap(g=>g.list).sort((a,b)=>b.pct-a.pct).slice(0,6);
+      box.innerHTML=sugg.length?sugg.map(s=>`<button class="btn ghost sm" data-open="${s.it.id}" style="display:flex;gap:8px;align-items:center;width:100%;margin:4px 0;text-align:left">${miniHTML(s.it)} <span style="flex:1">${esc(s.it.name)}</span> <span class="score">${s.pct}</span></button>`).join(''):'<p class="hint">Add colours/occasions to more items to get matches.</p>';
+      $$('[data-open]',box).forEach(b=>b.onclick=()=>openItem(Number(b.dataset.open)));
+      lazyPhotos(box);
+    },30);
+  }
+  lazyPhotos(sheet);
+}
+function handlePhotoFile(file,id,cb){
+  const fr=new FileReader();
+  fr.onload=()=>{const img=new Image();
+    img.onload=()=>{const mx=700;const sc=Math.min(1,mx/Math.max(img.width,img.height));
+      const c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      const url=c.toDataURL('image/jpeg',0.82);
+      idbSet('photo:'+id,url).then(()=>{photoUpload.set(Number(id),url);invalidatePhoto(id);cb&&cb(url);});
+    };
+    img.src=fr.result;};
+  fr.readAsDataURL(file);
+}
+
+/* ============================================================
+   PAIRING ENGINE
+   ============================================================ */
+let _co=null,_rated=null;
+function pairKey(a,b){a=Number(a);b=Number(b);return a<b?a+'|'+b:b+'|'+a;}
+function coMap(){
+  if(_co)return _co;_co=new Map();
+  for(const e of wearLog){
+    const w=e.kind==='season'?0.15:1;
+    const ids=[...new Set((e.items||[]).map(Number))];
+    for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){const k=pairKey(ids[i],ids[j]);_co.set(k,(_co.get(k)||0)+w);}
+  }
+  return _co;
+}
+function ratedMap(){
+  if(_rated)return _rated;_rated=new Map();
+  const sorted=[...pairings].sort((a,b)=>(a.ts||0)-(b.ts||0));
+  for(const p of sorted){
+    const v=p.verdict==='great'?1:p.verdict==='good'?0.4:-1;
+    const ids=[...new Set((p.items||[]).map(Number))];
+    for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++)_rated.set(pairKey(ids[i],ids[j]),v);
+  }
+  return _rated;
+}
+const colorList=it=>[it.c1,it.c2].map(c=>(c||'').toLowerCase().trim()).filter(Boolean);
+function harmonyPair(c1,c2){
+  if(c1===c2)return .45;
+  const n1=NEUTRALS.has(c1),n2=NEUTRALS.has(c2);
+  if(n1&&n2)return .35; if(n1||n2)return .55;
+  const h1=HUES[c1],h2=HUES[c2]; if(h1==null||h2==null)return .1;
+  let d=Math.abs(h1-h2); d=Math.min(d,360-d);
+  if(d<=35)return .5; if(d<=70)return .25; if(d>=150)return .45; return -.35;
+}
+function setScore(a,b){a=a||[];b=b||[];if(!a.length||!b.length)return .15;
+  const inter=a.filter(x=>b.includes(x)).length, uni=new Set([...a,...b]).size;
+  return (inter/uni)*1.3-.35;}
+function featuresPair(A,B){
+  const ca=colorList(A),cb=colorList(B);
+  let color=.1;
+  if(ca.length&&cb.length){let s=0,n=0;for(const x of ca)for(const y of cb){s+=harmonyPair(x,y);n++;}color=s/n;}
+  const pa=A.pat&&A.pat!=='solid',pb=B.pat&&B.pat!=='solid';
+  const pattern=pa&&pb?-.45:(pa||pb)?.3:.15;
+  const form=(A.form&&B.form)?Math.max(-1,1-Math.abs(A.form-B.form)*.55):0;
+  const warm=(A.warm&&B.warm)?Math.max(-1,1-Math.abs(A.warm-B.warm)*.45):0;
+  const season=setScore(A.sea,B.sea), occ=setScore(A.occ,B.occ);
+  const c=coMap().get(pairKey(A.id,B.id))||0;
+  const co=c?Math.min(1,Math.log(1+c)/Math.log(4)):0;
+  const rated=ratedMap().get(pairKey(A.id,B.id))||0;
+  return {color,pattern,form,warm,season,occ,co,rated};
+}
+const FEATS=['color','pattern','form','warm','season','occ','co','rated'];
+const sig=z=>1/(1+Math.exp(-z));
+function rawScore(f){let s=W.bias||0;for(const k of FEATS)s+=(W[k]||0)*f[k];return s;}
+function pairPct(A,B){return Math.max(1,Math.min(99,Math.round(100*sig(rawScore(featuresPair(A,B))))));}
+const FEAT_TXT={
+  color:['colours work together','colours may clash'],
+  pattern:['pattern + solid balance','two patterns compete'],
+  form:['formality matches','formality gap'],
+  warm:['similar weight','weight mismatch'],
+  season:['season overlap','different seasons'],
+  occ:['shared occasions','different occasions'],
+  co:['worn together before','—'],
+  rated:['rated well before','you said no to this pair']
+};
+function explainFeatures(f,limit=3){
+  const parts=FEATS.map(k=>({k,v:(W[k]||0)*f[k]})).filter(p=>Math.abs(p.v)>=.14).sort((a,b)=>Math.abs(b.v)-Math.abs(a.v)).slice(0,limit);
+  return parts.map(p=>`<span class="why ${p.v<0?'neg':''}">${FEAT_TXT[p.k][p.v<0?1:0]}</span>`).join('');
+}
+function avgFeatures(ids){
+  const its=ids.map(byId).filter(Boolean);const acc={};FEATS.forEach(k=>acc[k]=0);let n=0;
+  for(let i=0;i<its.length;i++)for(let j=i+1;j<its.length;j++){const f=featuresPair(its[i],its[j]);FEATS.forEach(k=>acc[k]+=f[k]);n++;}
+  if(n)FEATS.forEach(k=>acc[k]/=n);
+  return {f:acc,n};
+}
+function sgdStep(f,y,lr=0.35){
+  const p=sig(rawScore(f)),g=y-p;
+  for(const k of FEATS)W[k]=Math.max(-3,Math.min(3,(W[k]||0)+lr*g*f[k]));
+  W.bias=Math.max(-2,Math.min(2,(W.bias||0)+lr*.4*g));
+}
+const verdY=v=>v==='great'?1:v==='good'?0.65:0;
+function learnFromSample(ids,verdict){
+  const {f,n}=avgFeatures(ids); if(!n)return;
+  sgdStep(f,verdY(verdict)); trainCount++; saveW();
+}
+function retrainAll(){
+  W=Object.assign({},DEFAULT_W);
+  const samples=pairings.filter(p=>(p.items||[]).length>=2).map(p=>({f:avgFeatures(p.items).f,y:verdY(p.verdict)}));
+  for(let e=0;e<14;e++){samples.sort(()=>Math.random()-.5);for(const s of samples)sgdStep(s.f,s.y,.25);}
+  trainCount=samples.length;saveW();
+}
+function suggestForIds(ids){
+  const anchors=ids.map(byId).filter(Boolean); if(!anchors.length)return [];
+  const groups=new Map();
+  for(const it of items){
+    if(it.dep||it.cat==='underlayer'||ids.map(Number).includes(it.id))continue;
+    let s=0;const fAgg={};FEATS.forEach(k=>fAgg[k]=0);
+    for(const a of anchors){const f=featuresPair(a,it);s+=rawScore(f);FEATS.forEach(k=>fAgg[k]+=f[k]);}
+    s/=anchors.length;FEATS.forEach(k=>fAgg[k]/=anchors.length);
+    const pct=Math.max(1,Math.min(99,Math.round(100*sig(s))));
+    if(!groups.has(it.cat))groups.set(it.cat,[]);
+    groups.get(it.cat).push({it,pct,why:explainFeatures(fAgg,2)});
+  }
+  const out=[...groups.entries()].map(([cat,list])=>({cat,list:list.sort((a,b)=>b.pct-a.pct).slice(0,4)}));
+  return out.sort((a,b)=>b.list[0].pct-a.list[0].pct);
+}
+function outfitScore(its){
+  let s=0,n=0;const fAgg={};FEATS.forEach(k=>fAgg[k]=0);
+  for(let i=0;i<its.length;i++)for(let j=i+1;j<its.length;j++){const f=featuresPair(its[i],its[j]);s+=rawScore(f);FEATS.forEach(k=>fAgg[k]+=f[k]);n++;}
+  if(n){s/=n;FEATS.forEach(k=>fAgg[k]/=n);}
+  return {pct:Math.max(1,Math.min(99,Math.round(100*sig(s)))),raw:s,f:fAgg};
+}
+function buildOutfits(opts){
+  const {occ='',sea='',withLayer=true,require=[]}=opts||{};
+  const ok=it=>!it.dep&&it.cat!=='underlayer'
+    &&(!occ||!(it.occ||[]).length||(it.occ||[]).includes(occ))
+    &&(!sea||!(it.sea||[]).length||(it.sea||[]).includes(sea));
+  const pool=items.filter(ok);
+  const of=c=>pool.filter(it=>it.cat===c);
+  const tops=of('top'),bottoms=of('bottom'),dresses=of('dress'),shoes=of('shoes');
+  const layers=withLayer?pool.filter(it=>it.cat==='outerwear'||it.cat==='coat'):[];
+  const bases=[];
+  for(const d of dresses)bases.push([d]);
+  for(const t of tops)for(const b of bottoms)bases.push([t,b]);
+  const results=[];
+  const shoeOpts=shoes.length?shoes:[null], layerOpts=[null,...layers];
+  for(const base of bases){
+    for(const s of shoeOpts)for(const l of layerOpts){
+      const its=[...base];if(s)its.push(s);if(l)its.push(l);
+      if(require.length&&!require.every(id=>its.some(x=>x.id===Number(id))))continue;
+      const sc=outfitScore(its);
+      let bonus=0;
+      if(occ&&its.every(x=>(x.occ||[]).includes(occ)))bonus=3;
+      results.push({items:its,pct:Math.min(99,sc.pct+bonus),f:sc.f,baseKey:base.map(x=>x.id).join('-')});
+    }
+  }
+  results.sort((a,b)=>b.pct-a.pct);
+  const seen=new Set(),out=[];
+  for(const r of results){if(seen.has(r.baseKey))continue;seen.add(r.baseKey);out.push(r);if(out.length>=8)break;}
+  return out;
+}
+const seasonNow=()=>['winter','winter','spring','spring','spring','summer','summer','summer','fall','fall','fall','winter'][new Date().getMonth()];
+
+/* ============================================================
+   WEAR LOG VIEW
+   ============================================================ */
+function renderLog(){
+  const v=$('#view-log');
+  const entries=[...wearLog].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const groups=new Map();
+  for(const e of entries){const m=(e.date||'undated').slice(0,7);if(!groups.has(m))groups.set(m,[]);groups.get(m).push(e);}
+  v.innerHTML=`
+    <h2 class="sec">Wear log</h2>
+    <p class="hint">Private to this browser. Tip: select items in the Closet, then \u201cLog wear\u201d.</p>
+    <button class="btn primary" id="addlog">+ Log an outfit</button>
+    ${entries.length?[...groups.entries()].map(([m,list])=>`
+      <div class="mon">${m}</div>
+      ${list.map(e=>`
+      <div class="entry">
+        <div class="top"><span class="date">${esc(e.date||'')}</span><span class="ttl">${esc(e.title||'Outfit')}</span>
+          ${e.occ?`<span class="chip">${esc(e.occ)}</span>`:''}
+          ${e.kind==='season'?'<span class="tag warn">season tag</span>':''}
+          ${e.source==='sheet'?'<span class="tag">from sheet</span>':''}
+          ${e.approx?'<span class="chip">approx date</span>':''}</div>
+        <div class="minis">${(e.items||[]).map(id=>{const it=byId(id);return it?miniHTML(it):`<span class="chip">#${esc(id)}</span>`;}).join('')}</div>
+        ${e.notes?`<div class="notes">${esc(e.notes)}</div>`:''}
+        <div class="acts"><button class="btn sm ghost" data-edit="${esc(e.id)}">Edit</button><button class="btn sm ghost" data-del="${esc(e.id)}">Delete</button></div>
+      </div>`).join('')}`).join(''):'<div class="empty"><b>No wears logged yet</b>Log your first outfit to start teaching the pairing engine.</div>'}`;
+  $('#addlog',v).onclick=()=>logModal(null,[...SEL]);
+  $$('[data-edit]',v).forEach(b=>b.onclick=()=>logModal(wearLog.find(e=>e.id===b.dataset.edit)));
+  $$('[data-del]',v).forEach(b=>b.onclick=()=>{if(confirm('Delete this entry?')){wearLog=wearLog.filter(e=>e.id!==b.dataset.del);saveLog();renderAll();}});
+  lazyPhotos(v);
+}
+
+/* item picker used by log + pairing modals */
+function pickerHTML(selSet){
+  return `<div class="chips" id="pk-chips"></div>
+  <input type="search" id="pk-q" placeholder="Search items to add\u2026" style="width:100%;margin-top:8px">
+  <div class="pick" id="pk-list"></div>`;
+}
+function bindPicker(sheet,selSet){
+  const listEl=$('#pk-list',sheet),chipsEl=$('#pk-chips',sheet),qEl=$('#pk-q',sheet);
+  function draw(){
+    const q=qEl.value.toLowerCase();
+    const list=items.filter(it=>!it.dep||selSet.has(it.id)).filter(it=>!q||`${it.name} ${it.brand} ${it.c1} ${it.cat}`.toLowerCase().includes(q)).slice(0,80);
+    listEl.innerHTML=list.map(it=>`<button type="button" class="pr ${selSet.has(it.id)?'on':''}" data-pk="${it.id}">${miniHTML(it)}<span>${esc(it.name)}</span><span class="tick">\u2713</span></button>`).join('');
+    chipsEl.innerHTML=[...selSet].map(id=>{const it=byId(id);return it?`<span class="ich">${miniHTML(it)}${esc(it.name)}<button type="button" data-rm="${id}" aria-label="Remove">\u2715</button></span>`:'';}).join('')||'<span class="hint" style="font-size:12px;color:var(--faint)">No items selected yet.</span>';
+    $$('[data-pk]',listEl).forEach(b=>b.onclick=()=>{const id=Number(b.dataset.pk);selSet.has(id)?selSet.delete(id):selSet.add(id);draw();});
+    $$('[data-rm]',chipsEl).forEach(b=>b.onclick=()=>{selSet.delete(Number(b.dataset.rm));draw();});
+    lazyPhotos(sheet);
+  }
+  qEl.addEventListener('input',draw);draw();
+}
+
+function logModal(entry,presetIds){
+  const e=entry||{id:uid(),date:todayStr(),title:'',occ:'',items:presetIds||[],notes:'',kind:'outfit',source:'me'};
+  const selSet=new Set((e.items||[]).map(Number));
+  const sheet=openModal(`
+    <div class="shead"><h3>${entry?'Edit wear':'Log a wear'}</h3><button class="xbtn" data-x aria-label="Close">\u2715</button></div>
+    <div class="fieldrow">
+      <div><label class="fld">Date</label><input type="date" id="l-date" value="${esc(e.date||'')}" style="width:100%"></div>
+      <div style="flex:2"><label class="fld">Title / event</label><input type="text" id="l-title" value="${esc(e.title||'')}" placeholder="e.g. Team dinner" style="width:100%"></div>
+      <div><label class="fld">Occasion</label><select id="l-occ" style="width:100%"><option value=""></option>${occOptions().map(o=>`<option ${e.occ===o?'selected':''}>${esc(o)}</option>`).join('')}</select></div>
+    </div>
+    <label class="fld">Items worn</label>
+    ${pickerHTML(selSet)}
+    <label class="fld">Notes</label><textarea id="l-notes">${esc(e.notes||'')}</textarea>
+    ${!entry?'<label class="chk" style="margin-top:8px"><input type="checkbox" id="l-aspair"> also save these as a good pairing (teaches the engine)</label>':''}
+    <div class="fieldrow" style="margin-top:14px"><button class="btn primary" id="l-save">${entry?'Save':'Add to log'}</button></div>`);
+  $('[data-x]',sheet).onclick=closeModal;
+  bindPicker(sheet,selSet);
+  $('#l-save',sheet).onclick=()=>{
+    if(!selSet.size){toast('Pick at least one item',true);return;}
+    e.date=$('#l-date',sheet).value||todayStr();
+    e.title=$('#l-title',sheet).value.trim();
+    e.occ=$('#l-occ',sheet).value;
+    e.notes=$('#l-notes',sheet).value.trim();
+    e.items=[...selSet];e.approx=false;
+    if(!entry)wearLog.push(e);
+    saveLog();
+    const asPair=!entry&&$('#l-aspair',sheet)&&$('#l-aspair',sheet).checked&&selSet.size>=2;
+    if(asPair){pairings.push({id:uid(),items:[...selSet],verdict:'good',source:'wear log',notes:e.title,ts:Date.now()});savePairs();learnFromSample([...selSet],'good');}
+    SEL.clear();updateSelbar();closeModal();renderAll();
+    toast(entry?'Updated':'Logged'+(asPair?' & engine updated':''));
+  };
+}
+
+/* ============================================================
+   PAIRINGS VIEW (builder + ratings + engine)
+   ============================================================ */
+let qfPair=null;
+function renderPair(){
+  const v=$('#view-pair');
+  const maxW=Math.max(.6,...FEATS.map(k=>Math.abs(W[k]||0)));
+  v.innerHTML=`
+  <h2 class="sec">Pairings</h2>
+  <p class="hint">Check items in the Closet and \u201cSave pairing\u201d, rate ideas below, or let the engine dress you.</p>
+
+  <div class="panel">
+    <h3>Build me an outfit</h3>
+    <div class="fieldrow" style="align-items:flex-end">
+      <div><label class="fld">Occasion</label><select id="b-occ"><option value="">any</option>${occOptions().map(o=>`<option>${esc(o)}</option>`).join('')}</select></div>
+      <div><label class="fld">Season</label><select id="b-sea"><option value="">any</option>${SEASONS.map(s=>`<option ${s===seasonNow()?'selected':''}>${s}</option>`).join('')}</select></div>
+      <div><label class="chk" style="margin-bottom:8px"><input type="checkbox" id="b-layer" checked> include a layer</label></div>
+      <div><button class="btn accent" id="b-go">Generate</button></div>
+    </div>
+    <div id="b-out"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Rate an idea <span class="hint" style="display:inline">\u2014 each vote teaches the engine</span></h3>
+    <div id="qf"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Saved pairings & recommendations <span class="tag accent">${pairings.length}</span></h3>
+    <p class="hint">Sources can be you, friends, or ideas found online (Pinterest, magazines\u2026).</p>
+    <button class="btn sm primary" id="p-new">+ New pairing</button>
+    <div id="p-list">${pairings.length?[...pairings].sort((a,b)=>(b.ts||0)-(a.ts||0)).map(p=>`
+      <div class="entry">
+        <div class="top">
+          <span class="tag ${p.verdict==='great'?'good':p.verdict==='no'?'bad':''}">${esc(p.verdict)}</span>
+          <span class="chip">${esc(p.source||'me')}</span>
+          ${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener" style="font-size:12px">link</a>`:''}
+        </div>
+        <div class="minis">${(p.items||[]).map(id=>{const it=byId(id);return it?miniHTML(it):`<span class="chip">#${esc(id)}</span>`;}).join('')}</div>
+        ${p.notes?`<div class="notes">${esc(p.notes)}</div>`:''}
+        <div class="acts"><button class="btn sm ghost" data-share="${esc(p.id)}">Share</button><button class="btn sm ghost" data-pdel="${esc(p.id)}">Delete</button></div>
+      </div>`).join(''):'<div class="empty"><b>No pairings yet</b>Select 2+ items in the Closet and tap \u201cSave pairing\u201d.</div>'}</div>
+  </div>
+
+  <div class="panel">
+    <h3>What the engine has learned</h3>
+    <p class="hint">${trainCount?`Trained on ${trainCount} rating${trainCount>1?'s':''}.`:'Untrained \u2014 using sensible style defaults.'} Weights shift as you rate pairings.</p>
+    ${FEATS.map(k=>{const w=W[k]||0;return `<div class="wrow"><span>${FEAT_TXT[k][0]}</span><div class="wbar"><i class="${w<0?'neg':''}" style="width:${Math.round(Math.abs(w)/maxW*100)}%"></i></div><span style="font:600 11px var(--mono);color:var(--soft)">${w.toFixed(2)}</span></div>`;}).join('')}
+    <div class="fieldrow" style="margin-top:10px">
+      <button class="btn sm" id="w-retrain">Retrain from all saved ratings</button>
+      <button class="btn sm ghost" id="w-reset">Reset to defaults</button>
+    </div>
+  </div>`;
+
+  $('#b-go',v).onclick=()=>{
+    const outs=buildOutfits({occ:$('#b-occ',v).value,sea:$('#b-sea',v).value,withLayer:$('#b-layer',v).checked});
+    $('#b-out',v).innerHTML=outs.length?outs.map((o,i)=>fitcardHTML(o,i)).join(''):'<div class="empty"><b>No combos found</b>Loosen the occasion/season, or tag more items.</div>';
+    bindFitcards($('#b-out',v));
+  };
+  $('#p-new',v).onclick=()=>pairModal([...SEL]);
+  $$('[data-pdel]',v).forEach(b=>b.onclick=()=>{if(confirm('Delete this pairing?')){pairings=pairings.filter(p=>p.id!==b.dataset.pdel);savePairs();renderAll();}});
+  $$('[data-share]',v).forEach(b=>b.onclick=()=>{const p=pairings.find(x=>x.id===b.dataset.share);if(p)shareModal(p.items);});
+  $('#w-retrain',v).onclick=()=>{retrainAll();renderPair();toast('Retrained on '+trainCount+' ratings');};
+  $('#w-reset',v).onclick=()=>{W=Object.assign({},DEFAULT_W);trainCount=0;saveW();renderPair();toast('Weights reset');};
+  drawQuickfire(v);
+  lazyPhotos(v);
+}
+function fitcardHTML(o,i){
+  return `<div class="fitcard" data-fit="${i}">
+    <div class="hd"><span class="score">${o.pct}</span>${explainFeatures(o.f,3)}</div>
+    <div class="items">${o.items.map(it=>`<span class="it" data-openit="${it.id}">${miniHTML(it)}${esc(it.name)}</span>`).join('')}</div>
+    <div class="acts" style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn sm" data-fitlog="${o.items.map(x=>x.id).join(',')}">Log wear</button>
+      <button class="btn sm" data-fitsave="${o.items.map(x=>x.id).join(',')}">Save as pairing</button>
+      <button class="btn sm ghost" data-fitshare="${o.items.map(x=>x.id).join(',')}">Share</button>
+    </div></div>`;
+}
+function bindFitcards(scope){
+  $$('[data-openit]',scope).forEach(el=>el.onclick=()=>openItem(Number(el.dataset.openit)));
+  $$('[data-fitlog]',scope).forEach(b=>b.onclick=()=>logModal(null,b.dataset.fitlog.split(',').map(Number)));
+  $$('[data-fitsave]',scope).forEach(b=>b.onclick=()=>pairModal(b.dataset.fitsave.split(',').map(Number)));
+  $$('[data-fitshare]',scope).forEach(b=>b.onclick=()=>shareModal(b.dataset.fitshare.split(',').map(Number)));
+  lazyPhotos(scope);
+}
+function drawQuickfire(v){
+  const box=$('#qf',v);if(!box)return;
+  qfPair=nextQuickfire();
+  if(!qfPair){box.innerHTML='<p class="hint">Add a few more active items to get pairing ideas.</p>';return;}
+  const [A,B]=qfPair,f=featuresPair(A,B);
+  box.innerHTML=`
+    <div class="fitcard"><div class="hd"><span class="score">${pairPct(A,B)}</span>${explainFeatures(f,3)}</div>
+    <div class="items"><span class="it" data-openit="${A.id}">${miniHTML(A)}${esc(A.name)}</span><span class="it" data-openit="${B.id}">${miniHTML(B)}${esc(B.name)}</span></div>
+    <div class="acts" style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn sm" id="qf-great" style="border-color:var(--good);color:var(--good)">Great together</button>
+      <button class="btn sm" id="qf-good">It\u2019s fine</button>
+      <button class="btn sm" id="qf-no" style="border-color:var(--bad);color:var(--bad)">No</button>
+      <button class="btn sm ghost" id="qf-skip">Skip</button>
+    </div></div>`;
+  const vote=verdict=>{
+    pairings.push({id:uid(),items:[A.id,B.id],verdict,source:'quick rate',notes:'',ts:Date.now()});
+    savePairs();learnFromSample([A.id,B.id],verdict);renderPair();
+  };
+  $('#qf-great',box).onclick=()=>vote('great');
+  $('#qf-good',box).onclick=()=>vote('good');
+  $('#qf-no',box).onclick=()=>vote('no');
+  $('#qf-skip',box).onclick=()=>drawQuickfire(v);
+  $$('[data-openit]',box).forEach(el=>el.onclick=()=>openItem(Number(el.dataset.openit)));
+  lazyPhotos(box);
+}
+function nextQuickfire(){
+  const combos=[['top','bottom'],['dress','outerwear'],['dress','shoes'],['top','outerwear'],['bottom','outerwear'],['top','shoes'],['bottom','shoes'],['top','coat'],['bottom','coat']];
+  const act=activeItems();
+  for(let t=0;t<40;t++){
+    const [c1,c2]=combos[Math.floor(Math.random()*combos.length)];
+    const l1=act.filter(i=>i.cat===c1),l2=act.filter(i=>i.cat===c2);
+    if(!l1.length||!l2.length)continue;
+    const A=l1[Math.floor(Math.random()*l1.length)],B=l2[Math.floor(Math.random()*l2.length)];
+    if(A.id===B.id)continue;
+    if(ratedMap().has(pairKey(A.id,B.id)))continue;
+    return [A,B];
+  }
+  return null;
+}
+function pairModal(presetIds){
+  const selSet=new Set((presetIds||[]).map(Number));
+  let verdict='great';
+  const sheet=openModal(`
+    <div class="shead"><h3>Save a pairing</h3><button class="xbtn" data-x aria-label="Close">\u2715</button></div>
+    <label class="fld">Verdict</label>
+    <div class="seg" id="p-verdict">
+      <button data-v="great" aria-pressed="true">Great</button><button data-v="good" aria-pressed="false">Good</button><button data-v="no" aria-pressed="false">No</button>
+    </div>
+    <label class="fld">Items</label>
+    ${pickerHTML(selSet)}
+    <div class="fieldrow">
+      <div><label class="fld">Source</label><input type="text" id="p-source" value="me" placeholder="me / Mom / Pinterest\u2026" style="width:100%"></div>
+      <div style="flex:2"><label class="fld">Link (optional)</label><input type="url" id="p-url" placeholder="https://pinterest.com/\u2026" style="width:100%"></div>
+    </div>
+    <label class="fld">Notes</label><textarea id="p-notes" placeholder="Why it works, or where you saw it"></textarea>
+    <div class="fieldrow" style="margin-top:14px"><button class="btn primary" id="p-save">Save & teach engine</button></div>`);
+  $('[data-x]',sheet).onclick=closeModal;
+  bindPicker(sheet,selSet);
+  $$('#p-verdict button',sheet).forEach(b=>b.onclick=()=>{verdict=b.dataset.v;$$('#p-verdict button',sheet).forEach(x=>x.setAttribute('aria-pressed',x===b));});
+  $('#p-save',sheet).onclick=()=>{
+    if(selSet.size<2){toast('A pairing needs at least 2 items',true);return;}
+    pairings.push({id:uid(),items:[...selSet],verdict,source:$('#p-source',sheet).value.trim()||'me',url:$('#p-url',sheet).value.trim(),notes:$('#p-notes',sheet).value.trim(),ts:Date.now()});
+    savePairs();learnFromSample([...selSet],verdict);
+    SEL.clear();updateSelbar();closeModal();renderAll();toast('Pairing saved \u2014 engine updated');
+  };
+}
+function suggestModal(ids){
+  const anchors=ids.map(byId).filter(Boolean);
+  if(!anchors.length){toast('Select at least one item',true);return;}
+  const groups=suggestForIds(ids);
+  const sheet=openModal(`
+    <div class="shead"><h3>Goes with\u2026</h3><button class="xbtn" data-x aria-label="Close">\u2715</button></div>
+    <div class="chips">${anchors.map(a=>`<span class="ich">${miniHTML(a)}${esc(a.name)}</span>`).join('')}</div>
+    <div style="margin:10px 0"><button class="btn sm accent" id="s-fits">Build full outfits around these</button></div>
+    <div id="s-out">
+    ${groups.map(g=>`<label class="fld">${esc(g.cat)}</label>${g.list.map(s=>`
+      <div class="entry" style="display:flex;gap:9px;align-items:center;padding:8px 10px">
+        ${miniHTML(s.it)}<span style="flex:1;font-size:13px;font-weight:600">${esc(s.it.name)}<br><span style="font-weight:400">${s.why}</span></span>
+        <span class="score">${s.pct}</span>
+        <button class="btn sm ghost" data-addsel="${s.it.id}">+ select</button>
+      </div>`).join('')}`).join('')||'<p class="hint">No candidates \u2014 add more active items.</p>'}
+    </div>`);
+  $('[data-x]',sheet).onclick=closeModal;
+  $$('[data-addsel]',sheet).forEach(b=>b.onclick=()=>{SEL.add(Number(b.dataset.addsel));updateSelbar();toast('Added to selection');});
+  $('#s-fits',sheet).onclick=()=>{
+    const outs=buildOutfits({withLayer:true,require:ids});
+    $('#s-out',sheet).innerHTML=outs.length?outs.map((o,i)=>fitcardHTML(o,i)).join(''):'<div class="empty"><b>No full outfit found</b>These pieces may overlap in category \u2014 try fewer anchors.</div>';
+    bindFitcards($('#s-out',sheet));
+  };
+  lazyPhotos(sheet);
+}
+
+/* ============================================================
+   SHARE FOR FEEDBACK (serverless, via links)
+   ============================================================ */
+const b64e=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const b64d=s=>{try{return JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/')))));}catch(e){return null;}};
+function copyText(t){
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(()=>toast('Copied'),()=>toast('Copy failed \u2014 select & copy manually',true));
+  else toast('Select the text and copy manually',true);
+}
+function appBase(){return location.href.split('#')[0];}
+function shareModal(ids){
+  const its=ids.map(byId).filter(Boolean);
+  if(its.length<1){toast('Nothing to share',true);return;}
+  const payload={v:1,t:'share',items:its.map(it=>({id:it.id,n:it.name,c1:it.c1,c2:it.c2,pat:it.pat,cat:it.cat}))};
+  const link=appBase()+'#share='+b64e(payload);
+  const sheet=openModal(`
+    <div class="shead"><h3>Ask a friend</h3><button class="xbtn" data-x aria-label="Close">\u2715</button></div>
+    <p class="hint">Send this link \u2014 they\u2019ll see the outfit and can vote without an account. The link only contains these item names & colours, never your wear log.</p>
+    <div class="minis" style="display:flex;gap:6px;flex-wrap:wrap">${its.map(it=>miniHTML(it)).join('')}</div>
+    <textarea readonly style="margin-top:10px;font:12px var(--mono)">${esc(link)}</textarea>
+    <div class="fieldrow" style="margin-top:8px"><button class="btn primary" id="sh-copy">Copy link</button></div>`);
+  $('[data-x]',sheet).onclick=closeModal;
+  $('#sh-copy',sheet).onclick=()=>copyText(link);
+  lazyPhotos(sheet);
+}
+function handleHash(){
+  const h=location.hash||'';
+  if(h.startsWith('#share=')){
+    const p=b64d(h.slice(7));
+    if(p&&p.items)openShareView(p);
+    history.replaceState(null,'',appBase());
+  } else if(h.startsWith('#vote=')){
+    const p=b64d(h.slice(6));
+    if(p&&p.ids){
+      const names=(p.names||[]).join(' + ');
+      if(confirm(`Import vote from ${p.name||'a friend'}? \u201c${p.verdict}\u201d on: ${names}`)){
+        pairings.push({id:uid(),items:p.ids.map(Number),verdict:p.verdict,source:p.name||'friend',notes:p.msg||'',ts:Date.now()});
+        savePairs();learnFromSample(p.ids.map(Number),p.verdict);renderAll();toast('Friend\u2019s vote saved \u2014 engine updated');
+      }
+    }
+    history.replaceState(null,'',appBase());
+  }
+}
+function openShareView(p){
+  let verdict='great';
+  const fake=p.items.map(d=>I(d.id,d.n,{c1:d.c1,c2:d.c2,pat:d.pat,cat:d.cat}));
+  const sheet=openModal(`
+    <div class="shead"><h3>What do you think?</h3><button class="xbtn" data-x aria-label="Close">\u2715</button></div>
+    <p class="hint">A friend wants your opinion on this combination.</p>
+    <div class="items" style="display:flex;gap:8px;flex-wrap:wrap">${fake.map(it=>`<span class="it" style="display:inline-flex;gap:7px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:4px 8px;font-size:12.5px;font-weight:600">${miniHTML(it)}${esc(it.name)}</span>`).join('')}</div>
+    <label class="fld">Your verdict</label>
+    <div class="seg" id="v-seg"><button data-v="great" aria-pressed="true">Great</button><button data-v="good" aria-pressed="false">It\u2019s fine</button><button data-v="no" aria-pressed="false">No</button></div>
+    <div class="fieldrow">
+      <div><label class="fld">Your name</label><input type="text" id="v-name" style="width:100%"></div>
+    </div>
+    <label class="fld">Comment</label><textarea id="v-msg" placeholder="Optional \u2014 e.g. swap the shoes"></textarea>
+    <div class="fieldrow" style="margin-top:12px"><button class="btn primary" id="v-make">Create reply link</button></div>
+    <div id="v-out"></div>`);
+  $('[data-x]',sheet).onclick=closeModal;
+  $$('#v-seg button',sheet).forEach(b=>b.onclick=()=>{verdict=b.dataset.v;$$('#v-seg button',sheet).forEach(x=>x.setAttribute('aria-pressed',x===b));});
+  $('#v-make',sheet).onclick=()=>{
+    const reply=appBase()+'#vote='+b64e({v:1,ids:p.items.map(d=>d.id),names:p.items.map(d=>d.n),verdict,name:$('#v-name',sheet).value.trim(),msg:$('#v-msg',sheet).value.trim()});
+    $('#v-out',sheet).innerHTML=`<p class="hint" style="margin-top:10px">Send this back to them \u2014 opening it saves your vote into their app:</p><textarea readonly style="font:12px var(--mono)">${esc(reply)}</textarea><button class="btn sm" id="v-copy" style="margin-top:6px">Copy reply link</button>`;
+    $('#v-copy',sheet).onclick=()=>copyText(reply);
+  };
+  lazyPhotos(sheet);
+}
+
+/* ============================================================
+   STATS VIEW
+   ============================================================ */
+function renderStats(){
+  const v=$('#view-stats');
+  const wc=wearCounts();
+  const act=activeItems();
+  const worn=[...act].map(it=>({it,n:wc.get(it.id)||0}));
+  const top=worn.filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,8);
+  const never=worn.filter(x=>x.n===0);
+  const catCount=new Map();act.forEach(it=>catCount.set(it.cat,(catCount.get(it.cat)||0)+1));
+  const colCount=new Map();act.forEach(it=>{if(it.c1)colCount.set(it.c1.toLowerCase(),(colCount.get(it.c1.toLowerCase())||0)+1);});
+  const maxCat=Math.max(1,...catCount.values()),maxCol=Math.max(1,...colCount.values()),maxTop=Math.max(1,...top.map(t=>t.n));
+  v.innerHTML=`
+  <h2 class="sec">Stats</h2>
+  <div class="statgrid">
+    <div class="stat"><div class="v">${act.length}</div><div class="k">active items</div></div>
+    <div class="stat"><div class="v">${items.length-act.length}</div><div class="k">retired</div></div>
+    <div class="stat"><div class="v">${wearLog.length}</div><div class="k">log entries</div></div>
+    <div class="stat"><div class="v">${pairings.length}</div><div class="k">pairings rated</div></div>
+    <div class="stat"><div class="v">${never.length}</div><div class="k">never logged</div></div>
+  </div>
+  <div class="panel"><h3>Most worn</h3>
+    ${top.length?top.map(t=>`<div class="bar"><span style="display:flex;gap:6px;align-items:center">${miniHTML(t.it)}</span><div class="tr"><i style="width:${Math.round(t.n/maxTop*100)}%"></i></div><span>${t.n}\u00d7</span></div>
+    <div style="font-size:12px;color:var(--soft);margin:-4px 0 8px">${esc(t.it.name)}</div>`).join(''):'<p class="hint">Log some wears first.</p>'}
+  </div>
+  <div class="panel"><h3>Closet shape</h3>
+    ${[...catCount.entries()].sort((a,b)=>b[1]-a[1]).map(([c,n])=>`<div class="bar"><span>${esc(c)}</span><div class="tr"><i style="width:${Math.round(n/maxCat*100)}%"></i></div><span>${n}</span></div>`).join('')}
+    <hr class="seam">
+    ${[...colCount.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10).map(([c,n])=>`<div class="bar"><span style="display:flex;gap:6px;align-items:center"><span class="mini" style="width:16px;height:16px;background:${hexOf(c)}"></span>${esc(c)}</span><div class="tr"><i style="width:${Math.round(n/maxCol*100)}%;background:${hexOf(c)}"></i></div><span>${n}</span></div>`).join('')}
+  </div>
+  <div class="panel"><h3>Never logged <span class="tag warn">${never.length}</span></h3>
+    <p class="hint">Pieces with zero wear-log entries \u2014 candidates to style or retire.</p>
+    <div class="chips">${never.slice(0,40).map(t=>`<span class="ich" data-openit="${t.it.id}" style="cursor:pointer">${miniHTML(t.it)}${esc(t.it.name)}</span>`).join('')}${never.length>40?`<span class="chip">+${never.length-40} more</span>`:''}</div>
+  </div>`;
+  $$('[data-openit]',v).forEach(el=>el.onclick=()=>openItem(Number(el.dataset.openit)));
+  lazyPhotos(v);
+}
+
+/* ============================================================
+   DATA TAB — sync, import, export
+   ============================================================ */
+function parseDelim(text){
+  const firstNL=text.indexOf('\n');
+  const first=firstNL>=0?text.slice(0,firstNL):text;
+  const delim=first.includes('\t')?'\t':',';
+  const rows=[];let row=[],cur='',q=false;
+  for(let i=0;i<text.length;i++){const ch=text[i];
+    if(q){if(ch==='"'){if(text[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=ch;}
+    else{if(ch==='"')q=true;else if(ch===delim){row.push(cur);cur='';}else if(ch==='\n'){row.push(cur);rows.push(row);row=[];cur='';}else if(ch==='\r'){}else cur+=ch;}}
+  if(cur!==''||row.length){row.push(cur);rows.push(row);}
+  return rows.filter(r=>r.some(c=>String(c).trim()!==''));
+}
+const normH=h=>String(h||'').toLowerCase().trim().replace(/\s+/g,'_');
+function hIdx(headers,names){for(const n of names){const i=headers.findIndex(h=>h===n);if(i>=0)return i;}for(const n of names){const i=headers.findIndex(h=>h.includes(n));if(i>=0)return i;}return -1;}
+const splitList=s=>String(s||'').split(/[|,;]/).map(t=>t.trim()).filter(Boolean);
+function matchItemIds(tokens){
+  const ids=[],misses=[];
+  for(const t of tokens){
+    if(/^\d+$/.test(t)){ids.push(Number(t));continue;}
+    const tl=t.toLowerCase();
+    const hit=items.find(it=>it.name.toLowerCase()===tl)||items.find(it=>it.name.toLowerCase().includes(tl)||tl.includes(it.name.toLowerCase()));
+    if(hit)ids.push(hit.id);else misses.push(t);
+  }
+  return {ids:[...new Set(ids)],misses};
+}
+function importItemsRows(rows){
+  const hi=rows.findIndex(r=>r.map(normH).includes('name'));
+  if(hi<0)return 'Couldn\u2019t find a header row with \u201cname\u201d.';
+  const H=rows[hi].map(normH);
+  const col={id:hIdx(H,['id']),name:hIdx(H,['name']),desc:hIdx(H,['description','desc']),cat:hIdx(H,['category']),sub:hIdx(H,['subcategory']),c1:hIdx(H,['primary_color','primary_colour']),c2:hIdx(H,['secondary_color','secondary_colour']),pat:hIdx(H,['pattern']),mat:hIdx(H,['material']),brand:hIdx(H,['brand']),size:hIdx(H,['size']),form:hIdx(H,['formality']),warm:hIdx(H,['warmth']),occ:hIdx(H,['occasions','occasion']),sea:hIdx(H,['seasons','season']),photo:hIdx(H,['photo_url','photo']),acq:hIdx(H,['date_acquired','acquired']),worn:hIdx(H,['worn_at','worn']),notes:hIdx(H,['notes']),care:hIdx(H,['care_notes','care'])};
+  const g=(r,k)=>col[k]>=0?String(r[col[k]]||'').trim():'';
+  let added=0,updated=0;
+  for(const r of rows.slice(hi+1)){
+    const name=g(r,'name');if(!name)continue;
+    const id=parseInt(g(r,'id'))||(Math.max(0,...items.map(x=>x.id))+1);
+    let occ=splitList(g(r,'occ')),dep=false;
+    occ=occ.filter(o=>{if(o.toUpperCase()==='DEPRECATE'){dep=true;return false;}return true;});
+    const parsed={id,name,desc:g(r,'desc'),cat:g(r,'cat')||'top',sub:g(r,'sub'),c1:g(r,'c1'),c2:g(r,'c2'),pat:g(r,'pat'),mat:g(r,'mat'),brand:g(r,'brand'),size:g(r,'size'),
+      form:parseInt(g(r,'form'))||null,warm:parseInt(g(r,'warm'))||null,occ,sea:splitList(g(r,'sea')),photo:g(r,'photo'),acq:g(r,'acq'),
+      worn:splitList(g(r,'worn')).map(t=>t.replace(/\s+/g,'-')),notes:g(r,'notes'),care:g(r,'care'),dep};
+    const ex=byId(id);
+    if(ex){const keepPhoto=ex.photo&&!parsed.photo?ex.photo:parsed.photo;Object.assign(ex,parsed,{photo:keepPhoto});updated++;}
+    else{items.push(I(id,name,parsed));added++;}
+  }
+  saveItems();
+  return `Items: ${added} added, ${updated} updated.`;
+}
+function importLogRows(rows){
+  const hi=rows.findIndex(r=>{const H=r.map(normH);return H.some(h=>h.includes('item'))&&H.some(h=>h.includes('date'));});
+  if(hi<0)return 'Couldn\u2019t find a header row with \u201cdate\u201d and \u201citem\u2026\u201d columns.';
+  const H=rows[hi].map(normH);
+  const col={date:hIdx(H,['date']),title:hIdx(H,['title','event','name','outfit']),occ:hIdx(H,['occasion']),items:hIdx(H,['item_ids','items','item']),notes:hIdx(H,['notes','note'])};
+  const g=(r,k)=>col[k]>=0?String(r[col[k]]||'').trim():'';
+  let added=0,missAll=[];
+  for(const r of rows.slice(hi+1)){
+    const {ids,misses}=matchItemIds(splitList(g(r,'items')));missAll.push(...misses);
+    const date=g(r,'date'),title=g(r,'title');
+    if(!ids.length&&!title)continue;
+    if(wearLog.some(e=>e.source==='sheet'&&e.date===date&&e.title===title))continue;
+    wearLog.push({id:uid(),date,title,occ:g(r,'occ'),items:ids,notes:g(r,'notes'),kind:'outfit',source:'sheet',approx:false});
+    added++;
+  }
+  saveLog();
+  return `Wear log: ${added} entries added.`+(missAll.length?` Couldn\u2019t match: ${missAll.slice(0,5).join('; ')}${missAll.length>5?'\u2026':''}`:'');
+}
+function importPairRows(rows){
+  const hi=rows.findIndex(r=>r.map(normH).some(h=>h.includes('item')));
+  if(hi<0)return 'Couldn\u2019t find a header row with an \u201citem\u2026\u201d column.';
+  const H=rows[hi].map(normH);
+  const col={items:hIdx(H,['item_ids','items','item','pieces']),verdict:hIdx(H,['verdict','rating','score','vote']),source:hIdx(H,['source','from','submitted_by','by']),notes:hIdx(H,['notes','note','comment']),url:hIdx(H,['url','link'])};
+  const g=(r,k)=>col[k]>=0?String(r[col[k]]||'').trim():'';
+  let added=0,missAll=[];
+  for(const r of rows.slice(hi+1)){
+    const {ids,misses}=matchItemIds(splitList(g(r,'items')));missAll.push(...misses);
+    if(ids.length<2)continue;
+    const vraw=g(r,'verdict').toLowerCase();
+    const verdict=/great|love|yes|5|\u2764/.test(vraw)?'great':/no|bad|avoid|^1$|^2$/.test(vraw)?'no':'good';
+    pairings.push({id:uid(),items:ids,verdict,source:g(r,'source')||'sheet',notes:g(r,'notes'),url:g(r,'url'),ts:Date.now()});
+    added++;
+  }
+  savePairs();
+  if(added){retrainAll();}
+  return `Pairings: ${added} added${added?' \u2014 engine retrained':''}.`+(missAll.length?` Couldn\u2019t match: ${missAll.slice(0,5).join('; ')}${missAll.length>5?'\u2026':''}`:'');
+}
+const IMPORTERS={items:importItemsRows,wear_log:importLogRows,recommended_pairing:importPairRows};
+
+async function syncTab(tab,statusEl){
+  const sid=(prefs.sheetId||'').trim();
+  if(!sid){statusEl.textContent='Add your sheet ID first.';return;}
+  statusEl.textContent='Fetching \u201c'+tab+'\u201d\u2026';
+  try{
+    const url=`https://docs.google.com/spreadsheets/d/${sid}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
+    const res=await fetch(url);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const text=await res.text();
+    if(text.trim().startsWith('<'))throw new Error('not CSV');
+    const msg=IMPORTERS[tab](parseDelim(text));
+    statusEl.textContent='\u2713 '+msg;renderAll();
+  }catch(e){
+    statusEl.textContent='Couldn\u2019t fetch \u2014 the sheet must be shared as \u201cAnyone with the link can view\u201d. If it is, your browser may be blocking the request: use copy-paste import below instead.';
+  }
+}
+async function exportJSON(withPhotos){
+  const data={v:1,exported:new Date().toISOString(),items,wearLog,pairings,weights:W,trainCount,prefs};
+  if(withPhotos){
+    const keys=(await idbKeys()).filter(k=>String(k).startsWith('photo:'));
+    data.photos={};
+    for(const k of keys){const v=await idbGet(k);if(v)data.photos[k]=v;}
+  }
+  const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='wardrobe-backup-'+todayStr()+'.json';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+}
+function importJSON(file){
+  const fr=new FileReader();
+  fr.onload=async()=>{
+    try{
+      const d=JSON.parse(fr.result);
+      if(!d.items)throw 0;
+      items=d.items;wearLog=d.wearLog||[];pairings=d.pairings||[];
+      W=Object.assign({},DEFAULT_W,d.weights||{});trainCount=d.trainCount||0;
+      prefs=Object.assign(prefs,d.prefs||{});
+      if(d.photos)for(const[k,v]of Object.entries(d.photos)){await idbSet(k,v);const pid=Number(k.split(':')[1]);photoUpload.set(pid,v);invalidatePhoto(pid);}
+      saveItems();saveLog();savePairs();saveW();savePrefs();
+      renderAll();toast('Backup restored');
+    }catch(e){toast('That file doesn\u2019t look like a Wardrobe backup',true);}
+  };
+  fr.readAsText(file);
+}
+function renderData(){
+  const v=$('#view-data');
+  v.innerHTML=`
+  <h2 class="sec">Data</h2>
+  <div class="panel">
+    <h3>Sync from your Google Sheet</h3>
+    <p class="hint">Pulls a tab straight from the sheet (it must be shared \u201cAnyone with the link \u00b7 Viewer\u201d). Items merge by id; log & pairing rows are matched to items by id or name.</p>
+    <label class="fld">Spreadsheet ID</label>
+    <input type="text" id="d-sid" value="${esc(prefs.sheetId||'')}" style="width:100%;font:12px var(--mono)">
+    <div class="fieldrow" style="margin-top:10px">
+      <button class="btn sm" data-sync="items">Sync items</button>
+      <button class="btn sm" data-sync="wear_log">Sync wear_log</button>
+      <button class="btn sm" data-sync="recommended_pairing">Sync recommended_pairing</button>
+    </div>
+    <p class="hint" id="d-status" style="margin-top:8px"></p>
+  </div>
+  <div class="panel">
+    <h3>Paste import</h3>
+    <p class="hint">Select the cells in Google Sheets (header row included), copy, and paste here \u2014 tabs or CSV both work.</p>
+    <div class="fieldrow">
+      <div><label class="fld">Which tab is this?</label><select id="d-kind"><option value="items">items</option><option value="wear_log">wear_log</option><option value="recommended_pairing">recommended_pairing</option></select></div>
+    </div>
+    <textarea id="d-paste" style="min-height:110px;font:12px var(--mono)" placeholder="id\tname\tdescription\u2026"></textarea>
+    <div class="fieldrow" style="margin-top:8px"><button class="btn sm primary" id="d-import">Import pasted rows</button></div>
+    <p class="hint" id="d-pstatus"></p>
+  </div>
+  <div class="panel">
+    <h3>Backup & restore</h3>
+    <p class="hint">Everything here lives only in this browser. Download a backup to move devices or just to be safe.</p>
+    <div class="fieldrow" style="align-items:center">
+      <button class="btn sm primary" id="d-export">Download backup (.json)</button>
+      <label class="chk"><input type="checkbox" id="d-photos" checked> include photos</label>
+      <label class="btn sm" style="display:inline-block">Restore backup<input type="file" id="d-restore" accept="application/json" hidden></label>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Photos folder</h3>
+    <p class="hint" style="margin-bottom:0">\u2022 Put image files in a <code>photos/</code> folder next to <code>index.html</code>, named by item id: <code>photos/41.jpg</code>. The app finds them automatically (.jpg/.jpeg/.png/.webp).<br>
+    \u2022 <b>HEIC won\u2019t display in browsers</b> \u2014 convert iPhone photos to JPEG first (see the README for one-tap ways).<br>
+    \u2022 A photo you upload inside the app is saved on this device only and overrides the folder copy for that item until you tap \u201cRemove uploaded\u201d.<br>
+    \u2022 Console 404s while it checks which photos exist are normal and harmless. Optional: add <code>photos/manifest.json</code> to skip the checks (README).</p>
+  </div>
+  <div class="panel">
+    <h3>Privacy & hosting</h3>
+    <p class="hint" style="margin-bottom:6px">\u2022 The closet list and any photos in the <code>photos/</code> folder are part of the hosted site \u2014 anyone with your app link can see them.<br>
+    \u2022 Your wear log, ratings, learned weights and in-app photo uploads are stored only in this browser (localStorage/IndexedDB) and are never uploaded anywhere.<br>
+    \u2022 Works offline once loaded; on a phone use \u201cAdd to Home Screen\u201d to install it like an app.</p>
+  </div>
+  <div class="panel">
+    <h3 style="color:var(--bad)">Reset</h3>
+    <div class="fieldrow"><button class="btn sm danger" id="d-reset">Erase local data & reload seed</button></div>
+  </div>`;
+  $('#d-sid',v).addEventListener('change',e=>{prefs.sheetId=e.target.value.trim();savePrefs();});
+  $$('[data-sync]',v).forEach(b=>b.onclick=()=>syncTab(b.dataset.sync,$('#d-status',v)));
+  $('#d-import',v).onclick=()=>{
+    const txt=$('#d-paste',v).value;
+    if(!txt.trim()){$('#d-pstatus',v).textContent='Paste something first.';return;}
+    const msg=IMPORTERS[$('#d-kind',v).value](parseDelim(txt));
+    $('#d-pstatus',v).textContent=msg;renderAll();
+  };
+  $('#d-export',v).onclick=()=>exportJSON($('#d-photos',v).checked);
+  $('#d-restore',v).addEventListener('change',e=>{if(e.target.files[0])importJSON(e.target.files[0]);});
+  $('#d-reset',v).onclick=()=>{
+    if(!confirm('Erase all local data (wear log, ratings, photos, edits) and reload the built-in seed?'))return;
+    ['wd.items','wd.log','wd.pairs','wd.weights','wd.prefs','wd.traincount'].forEach(k=>store.del(k));
+    idbKeys().then(keys=>Promise.all(keys.map(idbDel))).finally(()=>location.reload());
+  };
+}
+
+/* ============================================================
+   TABS & BOOT
+   ============================================================ */
+const RENDER={closet:renderCloset,log:renderLog,pair:renderPair,stats:renderStats,data:renderData};
+function currentTab(){const b=$('.tabbtn[aria-selected="true"]');return b?b.dataset.tab:'closet';}
+function renderTab(t){['closet','log','pair','stats','data'].forEach(x=>$('#view-'+x).hidden=x!==t);(RENDER[t]||renderCloset)();}
+function refreshCounts(){$('#cnt-items').textContent=activeItems().length;$('#cnt-log').textContent=wearLog.length;$('#cnt-pair').textContent=pairings.length;}
+function renderAll(){refreshCounts();renderTab(currentTab());updateSelbar();}
+function boot(){
+  $$('.tabbtn').forEach(b=>b.onclick=()=>{$$('.tabbtn').forEach(x=>x.setAttribute('aria-selected',x===b));renderTab(b.dataset.tab);window.scrollTo({top:0});});
+  $('#sb-log').onclick=()=>{if(SEL.size)logModal(null,[...SEL]);};
+  $('#sb-pair').onclick=()=>{if(SEL.size>=2)pairModal([...SEL]);};
+  $('#sb-suggest').onclick=()=>{if(SEL.size)suggestModal([...SEL]);};
+  $('#sb-share').onclick=()=>{if(SEL.size)shareModal([...SEL]);};
+  $('#sb-clear').onclick=()=>{SEL.clear();updateSelbar();renderTab(currentTab());};
+  renderAll();
+  handleHash();
+  loadPhotoManifest().then(()=>{if(photoManifest){photoResolved.clear();lazyPhotos(document);}});
+  if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol)){
+    addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  }
+}
+document.addEventListener('DOMContentLoaded',boot);
+</script>
+</body>
+</html>
